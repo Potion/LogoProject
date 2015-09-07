@@ -13,19 +13,6 @@
 xcuserdata/
 build/
 
-# Ignore most things in the folder,
-# including downloaded tutorials and libraries
-openGL*/
-ogldev-source/
-CurlNoise/
-glfw-3.1.1/
-include/
-Simple\ OpenGL\ Image\ Library*/
+DerivedData
 
-# Pick and choose what to include
-!openGLOscilColor*/
-!openGLTrnsfrmFdbckPartSimp*/
-!openGLOscilColor/openGLSetup*/
-!openGLTrnsfrmFdbckPartSimp*/openGLSetup*/
-!openGLParticleSystemSimple*/
-!openGLParticleSystemSimple*/openGLSetup*/
+./Cinder/blocks/
