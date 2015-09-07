@@ -1,0 +1,31 @@
+# OS X Files
+*.DS_STORE
+
+# Xcode Noise
+*~.nib
+*.pbxuser
+*.perspective
+*.perspectivev3
+*.mode1v3
+*.mode2v3
+*.xcworkspace
+*.xcuserdata
+xcuserdata/
+build/
+
+# Ignore most things in the folder,
+# including downloaded tutorials and libraries
+openGL*/
+ogldev-source/
+CurlNoise/
+glfw-3.1.1/
+include/
+Simple\ OpenGL\ Image\ Library*/
+
+# Pick and choose what to include
+!openGLOscilColor*/
+!openGLTrnsfrmFdbckPartSimp*/
+!openGLOscilColor/openGLSetup*/
+!openGLTrnsfrmFdbckPartSimp*/openGLSetup*/
+!openGLParticleSystemSimple*/
+!openGLParticleSystemSimple*/openGLSetup*/
