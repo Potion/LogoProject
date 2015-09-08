@@ -47,7 +47,7 @@ void LogoProjectApp::update()
 void LogoProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-    //mParticles->draw();
+    mParticles->draw();
 }
 
 CINDER_APP( LogoProjectApp, RendererGl )

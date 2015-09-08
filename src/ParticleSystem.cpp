@@ -130,6 +130,7 @@ void ParticleSystem::update()
 
 void ParticleSystem::draw()
 {
+    ci::gl::clear(ci::Color(0, 0, 0));
     glClear(GL_COLOR_BUFFER_BIT);
     
     //  disable the rasterizer
@@ -188,6 +189,7 @@ void ParticleSystem::draw()
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
+    
 }
 
 //  loads data as char * from outside source
