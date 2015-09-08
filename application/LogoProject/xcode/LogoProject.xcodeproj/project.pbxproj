@@ -17,6 +17,7 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		28346EA312664D618F9AA981 /* LogoProjectApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D058FA638274A94AB6459A9 /* LogoProjectApp.cpp */; };
+		389F95461B9F5197000AC7A2 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 389F95441B9F5197000AC7A2 /* ParticleSystem.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		7C3E346C47E8474E816433EF /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5612701DA1714645AA3BD8DA /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -36,6 +37,8 @@
 		1D058FA638274A94AB6459A9 /* LogoProjectApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = LogoProjectApp.cpp; path = ../src/LogoProjectApp.cpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		389F95441B9F5197000AC7A2 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
+		389F95451B9F5197000AC7A2 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5612701DA1714645AA3BD8DA /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5D7C87EF24C847CFA3E573F1 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
@@ -78,7 +81,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				92359B6E1B9E308E0019FFE6 /* src */,
+				389F95431B9F516D000AC7A2 /* src */,
 				1D058FA638274A94AB6459A9 /* LogoProjectApp.cpp */,
 			);
 			name = Source;
@@ -160,6 +163,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		389F95431B9F516D000AC7A2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				389F95441B9F5197000AC7A2 /* ParticleSystem.cpp */,
+				389F95451B9F5197000AC7A2 /* ParticleSystem.h */,
+			);
+			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
 		92359B6D1B9E2FC50019FFE6 /* assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,14 +181,6 @@
 			);
 			name = assets;
 			path = ../../../assets;
-			sourceTree = "<group>";
-		};
-		92359B6E1B9E308E0019FFE6 /* src */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = src;
-			path = ../../../src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,6 +246,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				389F95461B9F5197000AC7A2 /* ParticleSystem.cpp in Sources */,
 				28346EA312664D618F9AA981 /* LogoProjectApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

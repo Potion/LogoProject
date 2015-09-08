@@ -1,11 +1,3 @@
-//
-//  vertex.glsl
-//  LogoProject
-//
-//  Created by Jennifer Presto on 9/7/15.
-//
-//
-
 #version 150 core
 
 uniform vec2 mousePos;

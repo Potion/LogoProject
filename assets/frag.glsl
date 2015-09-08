@@ -1,11 +1,3 @@
-//
-//  frag.glsl
-//  LogoProject
-//
-//  Created by Jennifer Presto on 9/7/15.
-//
-//
-
 #version 150 core
 
 in vec3 outCol;
