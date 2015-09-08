@@ -22,6 +22,8 @@ ParticleSystem::~ParticleSystem()
 {
     std::cout << "Calling particle system destructor" << std::endl;
     glDeleteVertexArrays(1, &mVAO);
+    glDeleteBuffers(1, &mPositionBufferA);
+    glDeleteBuffers(1, &mPositionBufferB);
     //glDeleteBuffers(2, mParticleBufferIDs);
     //glDeleteTransformFeedbacks(1, mTransformFeedbackIDs);
     
@@ -84,15 +86,17 @@ void ParticleSystem::setup()
 //    const char * vertexShaderSrc = loadShaderData("vertex.glsl");
 //    const char * fragShaderSrc = loadShaderData("frag.glsl");
 
+
+    //  load the external files
     std::string vertexShaderSrcString = loadShaderSource("vertex.glsl");
     std::string fragmentShaderSrcString = loadShaderSource("frag.glsl");
     
+    //  convert to const char *
     const char * vertexShaderSrc = vertexShaderSrcString.c_str();
     const char * fragShaderSrc = fragmentShaderSrcString.c_str();
     
-    //std::cout << "*********Create the vertex shader" << std::endl;
+    //  create the shader program
     GLuint vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSrc);
-    //std::cout << "*********Create the fragment shader" << std::endl;
     GLuint fragmentShader = createShader(GL_FRAGMENT_SHADER, fragShaderSrc);
     mShaderProgram = glCreateProgram();
     
@@ -126,6 +130,13 @@ void ParticleSystem::setup()
 void ParticleSystem::update()
 {
     
+}
+
+void ParticleSystem::updateMouse(ci::ivec2 pos)
+{
+    ci::vec2 normMousePos = normalizeMousePos(pos);
+    float mousePosArray[] = {normMousePos.x, normMousePos.y};
+    glUniform2fv(mMousePosUniform, 1, mousePosArray);
 }
 
 void ParticleSystem::draw()
@@ -173,8 +184,8 @@ void ParticleSystem::draw()
 //    glm::vec2 normMousePos = normalizeMousePos((float)(mouseX), (float)(mouseY));
 //    
 //    float mousePosArray[] = {normMousePos.x, normMousePos.y};
-    float mousePosArray[] = {0.0f, 0.0f};
-    glUniform2fv(mMousePosUniform, 1, mousePosArray);
+//    float mousePosArray[] = {0.0f, 0.0f};
+//    glUniform2fv(mMousePosUniform, 1, mousePosArray);
     
     glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferA);
     glEnableVertexAttribArray(mPosAttrib);
@@ -243,4 +254,25 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
     }
     
     return shader;
+}
+
+ci::vec2 ParticleSystem::normalizeMousePos(ci::ivec2 pos)
+{
+    ci::vec2    normPos;
+    float normX, normY;
+    normX = (float)pos.x / (float)ci::app::getWindowWidth();
+    normX *= 2.0f;
+    normX -= 1.0f;
+
+    normY = (float)pos.y / (float)ci::app::getWindowHeight();
+    normY *= 2.0f;
+    normY -= 1.0f;
+    normY *= -1.0f;
+
+    normX = glm::clamp(normX, -1.0f, 1.0f);
+    normY = glm::clamp(normY, -1.0f, 1.0f);
+    
+    normPos.x = normX;
+    normPos.y = normY;
+    return normPos;
 }

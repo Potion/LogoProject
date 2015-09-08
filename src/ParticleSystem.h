@@ -21,25 +21,27 @@ public:
 
     void setup();
     void update();
+    void updateMouse(ci::ivec2 pos);
     void draw();
     
 protected:
     ParticleSystem();
     
 private:
-    int     mParticleCount;
-    GLuint  mVAO;
-    GLuint  mPositionBufferA, mPositionBufferB;
-    GLuint  mShaderProgram;
+    int         mParticleCount;
+    GLuint      mVAO;
+    GLuint      mPositionBufferA, mPositionBufferB;
+    GLuint      mShaderProgram;
 
-    GLint   mPosAttrib;
-    GLint   mVelAttrib;
-    GLint   mColAttrib;
-    GLint   mMousePosUniform;
+    GLint       mPosAttrib;
+    GLint       mVelAttrib;
+    GLint       mColAttrib;
+    GLint       mMousePosUniform;
 
     const GLchar * loadShaderData(std::string path);
+    std::string loadShaderSource(std::string path);
     GLuint createShader(GLenum type, const GLchar* src);
     
-    std::string loadShaderSource(std::string path);
+    ci::vec2   normalizeMousePos(ci::ivec2 pos);
     
 };

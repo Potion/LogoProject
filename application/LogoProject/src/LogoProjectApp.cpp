@@ -12,6 +12,7 @@ class LogoProjectApp : public App {
   public:
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
+    void mouseMove( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
     
@@ -38,6 +39,11 @@ void LogoProjectApp::setup()
 
 void LogoProjectApp::mouseDown( MouseEvent event )
 {
+}
+
+void LogoProjectApp::mouseMove( MouseEvent event )
+{
+    mParticles->updateMouse(event.getPos());
 }
 
 void LogoProjectApp::update()
