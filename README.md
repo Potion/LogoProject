@@ -4,11 +4,13 @@ Uses raw openGL within Cinder project to allow interaction with logo.
 
 ####Installation
 **Adding OpenCV**
-* Include static libraries (```libopencv_calib3d.a```, ```libopencv_core.a```, ```libopencv_features2d.a```, etc.) in the folder ```libs/opencv/``` at the same level as the ```Cinder/``` folder.
+* Include opencv static libraries (```libopencv_calib3d.a```, ```libopencv_core.a```, ```libopencv_features2d.a```, etc.) in the folder ```libs/opencv/``` at the same level as the ```Cinder/``` folder.
+
+* Include 3rdParty static libraries (```libIlmImf.a```, ```liblibjasper.a```, etc.) in the folder ```libs/3rdParty/``` next to the opencv/ folder described above.
 
 * Under Build Phases, add the openCV static libraries (the ones listed above) under ```Link Binary With Libraries```. (Click the plus sign and navigate to the folder added above).
 
-* Under Build Phases, add the dynamic library ```libz.dylib```. (Click the plus sign: this should show up in the default list).
+* Under Build Phases, add ```QTKit.framework```. (Click the plus sign: this should show up in the default list).
 
 * Include opencv files (```calib3d.hpp```, ```core.hpp```, other folders, etc.) in the folder ```include/opencv2/``` at the same level as the ```Cinder/``` folder.
 
@@ -20,4 +22,5 @@ Uses raw openGL within Cinder project to allow interaction with logo.
 
 * Add the following to the Library Search Paths under Build Settings:
 	* ```../../../libs/opencv```
+	* ```../../../libs/3rdParty```
 

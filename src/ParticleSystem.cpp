@@ -131,7 +131,7 @@ void ParticleSystem::updateMouse(ci::ivec2 pos)
 
 void ParticleSystem::draw()
 {
-    ci::gl::clear(ci::Color(0, 0, 0));
+    //ci::gl::clear(ci::Color(0, 0, 0));
     glClear(GL_COLOR_BUFFER_BIT);
     
     //  disable the rasterizer

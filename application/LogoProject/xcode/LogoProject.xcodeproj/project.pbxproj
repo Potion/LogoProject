@@ -36,7 +36,14 @@
 		38EB3D501BA0A9D800F44445 /* libopencv_video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D3E1BA0A9D800F44445 /* libopencv_video.a */; };
 		38EB3D511BA0A9D800F44445 /* libopencv_videoio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D3F1BA0A9D800F44445 /* libopencv_videoio.a */; };
 		38EB3D521BA0A9D800F44445 /* libopencv_videostab.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D401BA0A9D800F44445 /* libopencv_videostab.a */; };
-		38EB3D551BA0AC0300F44445 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D541BA0AC0300F44445 /* libz.dylib */; };
+		38EB3D611BA0D78700F44445 /* libIlmImf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5A1BA0D78700F44445 /* libIlmImf.a */; };
+		38EB3D621BA0D78700F44445 /* liblibjasper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5B1BA0D78700F44445 /* liblibjasper.a */; };
+		38EB3D631BA0D78700F44445 /* liblibjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5C1BA0D78700F44445 /* liblibjpeg.a */; };
+		38EB3D641BA0D78700F44445 /* liblibpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5D1BA0D78700F44445 /* liblibpng.a */; };
+		38EB3D651BA0D78700F44445 /* liblibtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5E1BA0D78700F44445 /* liblibtiff.a */; };
+		38EB3D661BA0D78700F44445 /* liblibwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D5F1BA0D78700F44445 /* liblibwebp.a */; };
+		38EB3D671BA0D78700F44445 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D601BA0D78700F44445 /* libzlib.a */; };
+		38EB3D6A1BA0D7F100F44445 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EB3D691BA0D7F100F44445 /* QTKit.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		7C3E346C47E8474E816433EF /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5612701DA1714645AA3BD8DA /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -77,6 +84,15 @@
 		38EB3D3F1BA0A9D800F44445 /* libopencv_videoio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_videoio.a; path = ../../../libs/opencv/libopencv_videoio.a; sourceTree = "<group>"; };
 		38EB3D401BA0A9D800F44445 /* libopencv_videostab.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_videostab.a; path = ../../../libs/opencv/libopencv_videostab.a; sourceTree = "<group>"; };
 		38EB3D541BA0AC0300F44445 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		38EB3D571BA0C9AE00F44445 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		38EB3D5A1BA0D78700F44445 /* libIlmImf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIlmImf.a; path = ../../../libs/3rdParty/libIlmImf.a; sourceTree = "<group>"; };
+		38EB3D5B1BA0D78700F44445 /* liblibjasper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibjasper.a; path = ../../../libs/3rdParty/liblibjasper.a; sourceTree = "<group>"; };
+		38EB3D5C1BA0D78700F44445 /* liblibjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibjpeg.a; path = ../../../libs/3rdParty/liblibjpeg.a; sourceTree = "<group>"; };
+		38EB3D5D1BA0D78700F44445 /* liblibpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibpng.a; path = ../../../libs/3rdParty/liblibpng.a; sourceTree = "<group>"; };
+		38EB3D5E1BA0D78700F44445 /* liblibtiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibtiff.a; path = ../../../libs/3rdParty/liblibtiff.a; sourceTree = "<group>"; };
+		38EB3D5F1BA0D78700F44445 /* liblibwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibwebp.a; path = ../../../libs/3rdParty/liblibwebp.a; sourceTree = "<group>"; };
+		38EB3D601BA0D78700F44445 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../../../libs/3rdParty/libzlib.a; sourceTree = "<group>"; };
+		38EB3D691BA0D7F100F44445 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5612701DA1714645AA3BD8DA /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5D7C87EF24C847CFA3E573F1 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
@@ -92,7 +108,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38EB3D551BA0AC0300F44445 /* libz.dylib in Frameworks */,
+				38EB3D6A1BA0D7F100F44445 /* QTKit.framework in Frameworks */,
+				38EB3D611BA0D78700F44445 /* libIlmImf.a in Frameworks */,
+				38EB3D621BA0D78700F44445 /* liblibjasper.a in Frameworks */,
+				38EB3D631BA0D78700F44445 /* liblibjpeg.a in Frameworks */,
+				38EB3D641BA0D78700F44445 /* liblibpng.a in Frameworks */,
+				38EB3D651BA0D78700F44445 /* liblibtiff.a in Frameworks */,
+				38EB3D661BA0D78700F44445 /* liblibwebp.a in Frameworks */,
+				38EB3D671BA0D78700F44445 /* libzlib.a in Frameworks */,
 				38EB3D411BA0A9D800F44445 /* libopencv_calib3d.a in Frameworks */,
 				38EB3D421BA0A9D800F44445 /* libopencv_core.a in Frameworks */,
 				38EB3D431BA0A9D800F44445 /* libopencv_features2d.a in Frameworks */,
@@ -214,6 +237,15 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				38EB3D691BA0D7F100F44445 /* QTKit.framework */,
+				38EB3D5A1BA0D78700F44445 /* libIlmImf.a */,
+				38EB3D5B1BA0D78700F44445 /* liblibjasper.a */,
+				38EB3D5C1BA0D78700F44445 /* liblibjpeg.a */,
+				38EB3D5D1BA0D78700F44445 /* liblibpng.a */,
+				38EB3D5E1BA0D78700F44445 /* liblibtiff.a */,
+				38EB3D5F1BA0D78700F44445 /* liblibwebp.a */,
+				38EB3D601BA0D78700F44445 /* libzlib.a */,
+				38EB3D571BA0C9AE00F44445 /* QuickTime.framework */,
 				38EB3D541BA0AC0300F44445 /* libz.dylib */,
 				38EB3D2F1BA0A9D800F44445 /* libopencv_calib3d.a */,
 				38EB3D301BA0A9D800F44445 /* libopencv_core.a */,
@@ -352,7 +384,11 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = ../../../libs/opencv;
+				LIBRARY_SEARCH_PATHS = (
+					../../../libs/opencv,
+					../../../libs/3rdParty,
+					/Users/jennifer/Development/PotionProjects/LogoProject/LogoProject/libs/3rdParty,
+				);
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
 					"-lopencv_calib3d",
@@ -403,7 +439,11 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = ../../../libs/opencv;
+				LIBRARY_SEARCH_PATHS = (
+					../../../libs/opencv,
+					../../../libs/3rdParty,
+					/Users/jennifer/Development/PotionProjects/LogoProject/LogoProject/libs/3rdParty,
+				);
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/lib/libcinder.a\"",
 					"-lopencv_calib3d",
