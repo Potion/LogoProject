@@ -43,6 +43,7 @@ private:
     std::string loadShaderSource(std::string path);
     GLuint createShader(GLenum type, const GLchar* src);
     
-    ci::vec2   normalizeMousePos(ci::ivec2 pos);
+    ci::vec2    normalizeMousePos(ci::ivec2 pos);
+    ci::ivec2   mLastMousePos;
     
 };

@@ -35,6 +35,8 @@ void ParticleSystem::setup()
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
     
+    mLastMousePos = ci::vec2(0.0f, 0.0f);
+    
     //  array of values
     mParticleCount = 100000;
     GLfloat positionData[mParticleCount * 7]; // two slots for position, two for velocity, three for color
@@ -124,15 +126,27 @@ void ParticleSystem::update()
 
 void ParticleSystem::updateMouse(ci::ivec2 pos)
 {
-    ci::vec2 normMousePos = normalizeMousePos(pos);
-    float mousePosArray[] = {normMousePos.x, normMousePos.y};
-    glUniform2fv(mMousePosUniform, 1, mousePosArray);
+    glLinkProgram(mShaderProgram);
+    glUseProgram(mShaderProgram);
+    mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
+//    std::cout << "ParticleSystem::updateMouse: mMousePositionUniform: " << mMousePosUniform << std::endl;
+    mLastMousePos = pos;
+
+//    ci::vec2 normMousePos = normalizeMousePos(pos);
+//    float mousePosArray[] = {normMousePos.x, normMousePos.y};
+//    glUniform2fv(mMousePosUniform, 1, mousePosArray);
 }
 
 void ParticleSystem::draw()
 {
+    glLinkProgram(mShaderProgram);
+    glUseProgram(mShaderProgram);
+    ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
+    float mousePosArray[] = {normMousePos.x, normMousePos.y};
+    glUniform2fv(mMousePosUniform, 1, mousePosArray);
+
     //ci::gl::clear(ci::Color(0, 0, 0));
-    glClear(GL_COLOR_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
