@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 
 #include "ParticleSystem.h"
 
@@ -21,20 +22,21 @@ class LogoProjectApp : public App {
 
 void LogoProjectApp::setup()
 {
+    //  Seed Random
+    time_t t = time(0);
+    struct tm *now = localtime(&t);
+    ci::randSeed(now->tm_sec);
+    
     //  Add correct asset path
     ci::fs::path relativePath = "../../../../../assets";
     ci::fs::path absolutePath = ci::fs::canonical(relativePath);
     absolutePath.make_preferred().native();
     ci::app::addAssetDirectory(relativePath);
 
-    
-    //mShaderProg = gl::GlslProg::create( loadAsset( "vertex.glsl" ), loadAsset( "frag.glsl" ) );
-    
     //  print out OpenGL version
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
     mParticles = ParticleSystem::create();
-
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )

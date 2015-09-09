@@ -36,26 +36,16 @@ void ParticleSystem::setup()
     glBindVertexArray(mVAO);
     
     //  array of values
-    mParticleCount = 10000;
+    mParticleCount = 100000;
     GLfloat positionData[mParticleCount * 7]; // two slots for position, two for velocity, three for color
-    
-    //  generate random values
-    unsigned int time_ui = (unsigned int)( time(NULL) );
-    srand(time_ui);
     
     for (int i = 0; i < mParticleCount; i++) {
         
         //  position is completely random
-        float randNum = (float)(rand()) / (float)(RAND_MAX);
-        randNum *= 2.0;
-        randNum -= 1.0;
-        float randNum2 = (float)(rand()) / (float)(RAND_MAX);
-        randNum2 *= 2.0;
-        randNum2 -= 1.0;
-        
+        float randNum = ci::Rand::randFloat(-1.0f, 1.0f);
+        float randNum2 = ci::Rand::randFloat(-1.0f, 1.0f);
         //  velocity is normalized vector
-        float randNum3 = (float)(rand()) / (float)(RAND_MAX);
-        randNum3 *= M_PI * 2.0f;
+        float randNum3 = ci::Rand::randFloat(0.0f, M_PI * 2.0f);
         
         positionData[(i*7) + 0] = randNum;              // pos.x
         positionData[(i*7) + 1] = randNum2;             // pos.y
@@ -63,9 +53,9 @@ void ParticleSystem::setup()
         positionData[(i*7) + 2] = cos(randNum3) * 0.03; // vel.x
         positionData[(i*7) + 3] = sin(randNum3) * 0.03; // vel.y
         
-        positionData[(i*7) + 4] = (float)(rand()) / (float)(RAND_MAX);  // col.r
-        positionData[(i*7) + 5] = (float)(rand()) / (float)(RAND_MAX);  // col.g
-        positionData[(i*7) + 6] = (float)(rand()) / (float)(RAND_MAX);  // col.b
+        positionData[(i*7) + 4] = ci::Rand::randFloat();  // col.r
+        positionData[(i*7) + 5] = ci::Rand::randFloat();  // col.g
+        positionData[(i*7) + 6] = ci::Rand::randFloat();  // col.b
     }
     
     std::cout << "Sizeof positionData: " << sizeof(positionData) << std::endl;
@@ -175,18 +165,6 @@ void ParticleSystem::draw()
     
     glDisable(GL_RASTERIZER_DISCARD);
     
-    //  get the mouse position
-//    double mouseX;
-//    double mouseY;
-//    glfwGetCursorPos(window, &mouseX, &mouseY);
-    
-    //  normalize the mouse position
-//    glm::vec2 normMousePos = normalizeMousePos((float)(mouseX), (float)(mouseY));
-//    
-//    float mousePosArray[] = {normMousePos.x, normMousePos.y};
-//    float mousePosArray[] = {0.0f, 0.0f};
-//    glUniform2fv(mMousePosUniform, 1, mousePosArray);
-    
     glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferA);
     glEnableVertexAttribArray(mPosAttrib);
     glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
@@ -194,7 +172,6 @@ void ParticleSystem::draw()
     glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(mColAttrib);
     glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(4 * sizeof(float)));
-    
     
     glDrawArrays(GL_POINTS, 0, mParticleCount);
     glDisableVertexAttribArray(mPosAttrib);

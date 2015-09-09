@@ -9,6 +9,7 @@
 #pragma once
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 
 class ParticleSystem;
 typedef std::shared_ptr<ParticleSystem> ParticleSystemRef;
