@@ -24,10 +24,13 @@ class LogoProjectApp : public App {
 	void draw() override;
     
     void printDevices();
+    void restartCamera();
     CaptureRef          mCapture;
     gl::TextureRef      mTexture;
     
-    ParticleSystemRef mParticles;
+    ParticleSystemRef   mParticles;
+    
+    int                 mLastGoodFrame;
 };
 
 void LogoProjectApp::setup()
@@ -60,6 +63,7 @@ void LogoProjectApp::setup()
     }
     
     std::cout << "Got this far" << std::endl;
+    mLastGoodFrame = 1;
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )
@@ -75,14 +79,20 @@ void LogoProjectApp::update()
 {
     if( mCapture && mCapture->checkNewFrame() ) {
         std::cout << "Frame # " << ci::app::getElapsedFrames() << " got new frame" << std::endl;
+        mLastGoodFrame = ci::app::getElapsedFrames();
         if( ! mTexture ) {
             // Capture images come back as top-down, and it's more efficient to keep them that way
             mTexture = gl::Texture::create( *mCapture->getSurface(), gl::Texture::Format().loadTopDown() );
+            std::cout << "Creating texture" << std::endl;
         }
         else {
             mTexture->update( *mCapture->getSurface() );
         }
     } else {
+        if (ci::app::getElapsedFrames() - mLastGoodFrame > 30) {
+            std::cout << "30 frames of sadness" << std::endl;
+            restartCamera();
+        }
         if (!mCapture) {
             std::cout << "Frame # " << ci::app::getElapsedFrames() << "no mCapture" << std::endl;
         }
@@ -109,6 +119,14 @@ void LogoProjectApp::printDevices()
     for( const auto &device : Capture::getDevices() ) {
         console() << "Device: " << device->getName() << endl;
     }
+}
+
+void LogoProjectApp::restartCamera()
+{
+    std::cout << "LogoProjectApp::restartCamera" << std::endl;
+    mCapture->stop();
+    mCapture->start();
+    mLastGoodFrame = ci::app::getElapsedFrames();
 }
 
 CINDER_APP( LogoProjectApp, RendererGl )
