@@ -4,6 +4,7 @@
 #include "cinder/Rand.h"
 
 #include "ParticleSystem.h"
+#include "opencv2/core/core.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -37,6 +38,9 @@ void LogoProjectApp::setup()
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
     mParticles = ParticleSystem::create();
+
+    cv::Mat depthMatrix;
+    
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )

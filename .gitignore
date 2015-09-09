@@ -12,6 +12,8 @@
 *.xcuserdata
 xcuserdata/
 build/
+libs/opencv/
+include/opencv2/
 
 DerivedData
 
