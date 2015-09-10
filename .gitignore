@@ -12,9 +12,11 @@
 *.xcuserdata
 xcuserdata/
 build/
-libs/opencv/
-libs/3rdParty/
-include/opencv2/
+libs/opencv/*
+libs/3rdParty/*
+include/opencv2/*
+
+!.gitkeep
 
 DerivedData
 
