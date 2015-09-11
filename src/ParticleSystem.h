@@ -46,4 +46,5 @@ private:
     ci::vec2    normalizeMousePos(ci::ivec2 pos);
     ci::ivec2   mLastMousePos;
     
+    
 };

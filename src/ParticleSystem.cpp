@@ -38,7 +38,7 @@ void ParticleSystem::setup()
     mLastMousePos = ci::vec2(0.0f, 0.0f);
     
     //  array of values
-    mParticleCount = 100000;
+    mParticleCount = 200000;
     GLfloat positionData[mParticleCount * 7]; // two slots for position, two for velocity, three for color
     
     for (int i = 0; i < mParticleCount; i++) {
@@ -142,6 +142,9 @@ void ParticleSystem::draw()
     glLinkProgram(mShaderProgram);
     glUseProgram(mShaderProgram);
     ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
+    
+//    std::vector<ci::vec2> wPixels = getWithPixles();
+//    ci::vec2 myPix = wPixels[ random(0.wPixels.size()];
     float mousePosArray[] = {normMousePos.x, normMousePos.y};
     glUniform2fv(mMousePosUniform, 1, mousePosArray);
 

@@ -41,6 +41,10 @@ class LogoProjectApp : public App {
     
     int                 mLastGoodFrame;
     int                 mThreshold;
+    
+    std::vector<ci::vec2>   getWhitePixels(cv::Mat &mat);
+    ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
+    void                sendRandomPoint(ci::vec2 point);
 };
 
 void LogoProjectApp::setup()
@@ -78,7 +82,7 @@ void LogoProjectApp::setup()
     
     mPrevMat = cv::Mat(480, 640, CV_8U);
     mLastGoodFrame = 1;
-    mThreshold = 70;
+    mThreshold = 20;
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )
@@ -114,12 +118,16 @@ void LogoProjectApp::update()
     cv::Mat colorInput = convertToOCVMat(*mCapture->getSurface());
     
     //  create OpenCV mats to save and manipulate our camera image
+    cv::Mat matPreFlip;
     cv::Mat blackAndWhite;
     cv::Mat tempCopyPrev;
     cv::Mat tempDiff;
     
     //  convert color input to blackandwhite
-    cv::cvtColor(colorInput, blackAndWhite, CV_RGB2GRAY);
+    cv::cvtColor(colorInput, matPreFlip, CV_RGB2GRAY);
+    
+    //  flip it
+    cv::flip(matPreFlip, blackAndWhite, 1);
     
     //std::cout << "\n\nNew Frame***********************\n" << std::endl;
     //std::cout << "mCurrentMat->size-> " << mCurrentMat.size() <<" " << mCurrentMat.type() << std::endl;
@@ -128,14 +136,14 @@ void LogoProjectApp::update()
     //std::cout << "tempDiff->size-> " << tempDiff.size() << " " << tempDiff.type() << std::endl;
     //std::cout << "blackAndWhite->size-> " << blackAndWhite.size() << " " << blackAndWhite.type() << std::endl;
     
-    if ( blackAndWhite.type() == mPrevMat.type() )
-    {
+//    if ( blackAndWhite.type() == mPrevMat.type() )
+//    {
         mPrevMat.copyTo( tempCopyPrev );
         cv::absdiff(blackAndWhite, tempCopyPrev, tempDiff );
-    }
-    else {
-        std::cout << "The types do not match" << std::endl;
-    }
+//    }
+//    else {
+//        std::cout << "The types do not match" << std::endl;
+//    }
 
     //  save the B&W version as the previous image
     blackAndWhite.copyTo(mPrevMat);
@@ -150,6 +158,10 @@ void LogoProjectApp::update()
 
     //  threshold the changes
     cv::threshold(tempDiff, tempDiff, mThreshold, 255, CV_THRESH_BINARY);
+    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
+    if (whitePixels.size() > 0) {
+        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
+    }
 
     //  convert OpenCV mats to Cinder-usable images
     ImageSourceRef imageRef = fromOcv(tempDiff);
@@ -205,6 +217,37 @@ void LogoProjectApp::restartCamera()
 cv::Mat LogoProjectApp::convertToOCVMat(ci::Surface &surface)
 {
     return cv::Mat( surface.getHeight(), surface.getWidth(), CV_MAKETYPE( CV_8U, surface.hasAlpha()?4:3), surface.getData(), surface.getRowBytes() );
+}
+
+std::vector<ci::vec2> LogoProjectApp::getWhitePixels(cv::Mat &mat)
+{
+    std::vector<ci::vec2> whitePixels;
+    //  check for white pixels
+    for ( int y = 0; y < mat.rows; y++) {
+        for ( int x = 0; x < mat.cols; x++) {
+            if (mat.at<unsigned char>(y, x) == 255) {
+                //                std::cout << "white pixel at " << x << ", " << y << std::endl;
+                whitePixels.push_back(ci::vec2(x, y));
+            }
+        }
+    }
+    return whitePixels;
+}
+
+ci::vec2 LogoProjectApp::chooseRandomWhiteSpot(std::vector<ci::vec2> &vector)
+{
+    if (vector.size() > 0) {
+        int p = ci::Rand::randInt(0, vector.size());
+        return vector[p];
+    }
+    else {
+        return ci::vec2(0.0f, 0.0f);
+    }
+}
+
+void LogoProjectApp::sendRandomPoint(ci::vec2 point)
+{
+    mParticles->updateMouse(point);
 }
 
 CINDER_APP( LogoProjectApp, RendererGl )
