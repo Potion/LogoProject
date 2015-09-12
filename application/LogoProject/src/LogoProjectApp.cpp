@@ -169,30 +169,30 @@ void LogoProjectApp::update()
     cv::threshold(tempDiff, tempDiff, mThreshold, 255, CV_THRESH_BINARY);
     
     //  send one random movement location to particle system
-//    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
-//    if (whitePixels.size() > 0) {
+    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
+    if (whitePixels.size() > 0) {
 //        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
-//    }
+    }
 
     //  convert OpenCV mats to Cinder-usable images
     ImageSourceRef imageRef = fromOcv(tempDiff);
     Surface8u tempSurface = Surface8u(imageRef);
     
-//    if (!mTexture) {
-//        std::cout << "update::Creating new texture" << std::endl;
-//        mTexture = ci::gl::Texture::create(imageRef);
-//    } else {
-//        mTexture->update(tempSurface);
-//    }
+    if (!mTexture) {
+        std::cout << "update::Creating new texture" << std::endl;
+        mTexture = ci::gl::Texture::create(imageRef);
+    } else {
+        mTexture->update(tempSurface);
+    }
 }
 
 void LogoProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
-//    if (mTexture) {
-//        gl::draw(mTexture);
-//    }
+    if (mTexture) {
+        gl::draw(mTexture);
+    }
 
     //  Draw the FPS
     ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
@@ -217,7 +217,6 @@ void LogoProjectApp::printDevices()
 ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
 {
     for( const auto &device : Capture::getDevices() ) {
-        console() << "Device: " << device->getName() << ", Id# " << device->getUniqueId() << endl;
         if (device->getName().find("DepthSense") != std::string::npos) {
             return device;
         }

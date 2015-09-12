@@ -17,7 +17,8 @@ ParticleSystemRef ParticleSystem::create()
 
 ParticleSystem::ParticleSystem()
 : mIsFirst(true)
-, mParticleCount(100)
+, mParticleCount(10000)
+, mMaxNewPositions(250)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -26,8 +27,8 @@ ParticleSystem::~ParticleSystem()
     glDeleteVertexArrays(1, &mVAO);
     glDeleteBuffers(1, &mParticleBufferA);
     glDeleteBuffers(1, &mParticleBufferB);
-    glDeleteTransformFeedbacks(1, &mTFBufferA);
-    glDeleteTransformFeedbacks(1, &mTFBufferB);
+    //glDeleteTransformFeedbacks(1, &mTFBufferA);
+    //glDeleteTransformFeedbacks(1, &mTFBufferB);
 }
 
 void ParticleSystem::setup()
@@ -40,6 +41,7 @@ void ParticleSystem::setup()
     
     //  array of values
     GLfloat positionData[mParticleCount * 7]; // two slots for position, two for velocity, three for color
+    GLfloat newPositionData[mMaxNewPositions * 2];
     
     for (int i = 0; i < mParticleCount; i++) {
         
@@ -60,11 +62,16 @@ void ParticleSystem::setup()
         positionData[(i*7) + 6] = ci::Rand::randFloat();  // col.b
     }
     
-    std::cout << "Sizeof positionData: " << sizeof(positionData) << std::endl;
+    for (int i = 0; i < mMaxNewPositions; i++) {
+        newPositionData[i] = 0.0f;
+    }
     
-    //  create transform feedback buffers
-    glGenTransformFeedbacks(1, &mTFBufferA);
-    glGenTransformFeedbacks(1, &mTFBufferB);
+    std::cout << "Sizeof positionData: " << sizeof(positionData) << std::endl;
+    std::cout << "Sizeof newPositionData: " << sizeof(newPositionData) << std::endl;
+    
+    //  create transform feedback buffers (this breaks with OpenGL 3.3)
+    //glGenTransformFeedbacks(1, &mTFBufferA);
+    //glGenTransformFeedbacks(1, &mTFBufferB);
     //glGenTransformFeedbacks(2, mTransformFeedbacks);
     
     
@@ -78,6 +85,13 @@ void ParticleSystem::setup()
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferB);
     glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), 0, GL_STREAM_DRAW); // don't initialize immediately
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    //  create a buffer that will hold new positions each frame
+//    glGenBuffers(1, &mNewPositions);
+//    glBindBuffer(GL_ARRAY_BUFFER, mNewPositions);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(newPositionData), newPositionData, GL_STREAM_DRAW);
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
     
     //  create shader program
 //    std::cout << "Creating shaders: ..." << std::endl;
@@ -117,12 +131,21 @@ void ParticleSystem::setup()
     mPosAttrib = glGetAttribLocation(mShaderProgram, "inPos");
     mVelAttrib = glGetAttribLocation(mShaderProgram, "inVel");
     mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
+//    mNewPosAttrib = glGetAttribLocation(mShaderProgram, "newPositions");
+
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
+    mNumNewPosUniform = glGetUniformLocation(mShaderProgram, "numNewPositions");
+    mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
+    
+    std::cout << "Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
     std::cout << "mPosAttrib: " << mPosAttrib << std::endl;
     std::cout << "mVelAttrib: " << mVelAttrib << std::endl;
     std::cout << "mColAttrib: " << mColAttrib << std::endl;
+//    std::cout << "mNewPosAttrib: " << mNewPosAttrib << std::endl;
     std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
+    std::cout << "mNumNewPosUniform: " << mNumNewPosUniform << std::endl;
+    std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
 }
 
 void ParticleSystem::update()
@@ -132,10 +155,9 @@ void ParticleSystem::update()
 
 void ParticleSystem::updateMouse(ci::ivec2 pos)
 {
-    glLinkProgram(mShaderProgram);
-    glUseProgram(mShaderProgram);
-    mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
-//    std::cout << "ParticleSystem::updateMouse: mMousePositionUniform: " << mMousePosUniform << std::endl;
+    //glLinkProgram(mShaderProgram);
+    //glUseProgram(mShaderProgram);
+    //mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mLastMousePos = pos;
 
 //    ci::vec2 normMousePos = normalizeMousePos(pos);
@@ -145,7 +167,7 @@ void ParticleSystem::updateMouse(ci::ivec2 pos)
 
 void ParticleSystem::draw()
 {
-    glLinkProgram(mShaderProgram);
+    //glLinkProgram(mShaderProgram);
     glUseProgram(mShaderProgram);
     ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
     
@@ -153,7 +175,17 @@ void ParticleSystem::draw()
 //    ci::vec2 myPix = wPixels[ random(0.wPixels.size()];
     float mousePosArray[] = {normMousePos.x, normMousePos.y};
     glUniform2fv(mMousePosUniform, 1, mousePosArray);
-
+    
+    //  make test array
+    float array[500];
+    float increment = (float)2.0 / (float)250.0;
+    for (int i = 0; i < 250; i++) {
+        array[i*2 + 0] = -1.0 + (increment * (float)i);
+        array[i*2 + 1] = 0.0f;
+    }
+    
+    glUniform2fv(mNewPosUniform, 250, array);
+    
     //ci::gl::clear(ci::Color(0, 0, 0));
     //glClear(GL_COLOR_BUFFER_BIT);
     

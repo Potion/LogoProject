@@ -1,14 +1,20 @@
 #version 150 core
 
 uniform vec2 mousePos;
+uniform int numNewPositions;
+uniform vec2 newPositions[250];
 
 in vec2 inPos;
 in vec2 inVel;
 in vec3 inCol;
 
+//in vec2 newPositions[250];
+
 out vec2 outPos;
 out vec2 outVel;
 out vec3 outCol;
+
+
 
 // generate a pseudo random direction based on particle's current position
 // http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
@@ -57,6 +63,11 @@ void main() {
     float max = 0.05;
     float maxSquared = max * max;
     
+    int number = numNewPositions;
+    
+    vec2 array[250] = newPositions;
+//    vec2 firstPos = newPositions[0];
+    
     outPos = inPos;
     outVel = inVel;
     outVel += gravity;
@@ -93,7 +104,8 @@ void main() {
         
         outVel = getDir(newFloat);
         outVel *= newSpeed;
-        outPos = mousePos;
+        //outPos = mousePos;
+        outPos = newPositions[249];
     }
     
     outCol = inCol;

@@ -30,7 +30,9 @@ protected:
     
 private:
     int         mParticleCount;
+    int         mMaxNewPositions;
     GLuint      mVAO;
+    GLuint      mNewPositions;
     GLuint      mParticleBufferA, mParticleBufferB;
     GLuint      mTFBufferA, mTFBufferB;
     //GLuint      mTransformFeedbacks[2];
@@ -39,7 +41,10 @@ private:
     GLint       mPosAttrib;
     GLint       mVelAttrib;
     GLint       mColAttrib;
+//    GLint       mNewPosAttrib;
     GLint       mMousePosUniform;
+    GLint       mNumNewPosUniform;
+    GLint       mNewPosUniform;
 
     const GLchar * loadShaderData(std::string path);
     std::string loadShaderSource(std::string path);
