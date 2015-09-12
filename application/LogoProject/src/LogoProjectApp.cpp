@@ -28,17 +28,23 @@ class LogoProjectApp : public App {
 	void update() override;
 	void draw() override;
     
-    void                printDevices();
-    void                restartCamera();
-    CaptureRef          mCapture;
-    gl::TextureRef      mTexture;
-    //cv::VideoCapture    mOpenCVCam;
+    //  camera
+    void                    printDevices();
+    ci::Capture::DeviceRef  findDepthSense();
+    void                    restartCamera();
+    CaptureRef              mCapture;
+    gl::TextureRef          mTexture;
+    //cv::VideoCapture      mOpenCVCam;
     
+    //  openCV
     cv::Mat             convertToOCVMat(ci::Surface &surface);
     cv::Mat             mPrevMat;
     
+    //  particles
     ParticleSystemRef   mParticles;
-    
+
+    //  motion detection
+    int                 mNumFramesForRestart;
     int                 mLastGoodFrame;
     int                 mThreshold;
     
@@ -66,9 +72,11 @@ void LogoProjectApp::setup()
     mParticles = ParticleSystem::create();
     
     //  camera
-    printDevices();
+    if (!findDepthSense()) {
+        quit();
+    }
     try {
-        mCapture = Capture::create( 640, 480 );
+        mCapture = Capture::create( 640, 480, findDepthSense() );
         mCapture->start();
     }
     catch( ci::Exception &exc ) {
@@ -82,6 +90,7 @@ void LogoProjectApp::setup()
     
     mPrevMat = cv::Mat(480, 640, CV_8U);
     mLastGoodFrame = 1;
+    mNumFramesForRestart = 60;
     mThreshold = 20;
 }
 
@@ -96,7 +105,7 @@ void LogoProjectApp::mouseMove( MouseEvent event )
 
 void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
 {
-    std::cout << "LogoProjectApp::keyDown: Saving image" << std::endl;
+    std::cout << "LogoProjectApp::keyDown:" << std::endl;
 }
 
 void LogoProjectApp::update()
@@ -105,7 +114,7 @@ void LogoProjectApp::update()
     //  wait until we have both images before we start comparison
     if (!mCapture || !mCapture->checkNewFrame()) {
         //  if we're not getting new frames at all, stop and restart capture
-        if (ci::app::getElapsedFrames() - mLastGoodFrame > 30) {
+        if (ci::app::getElapsedFrames() - mLastGoodFrame > mNumFramesForRestart) {
             restartCamera();
         }
         return;
@@ -158,30 +167,32 @@ void LogoProjectApp::update()
 
     //  threshold the changes
     cv::threshold(tempDiff, tempDiff, mThreshold, 255, CV_THRESH_BINARY);
-    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
-    if (whitePixels.size() > 0) {
-        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
-    }
+    
+    //  send one random movement location to particle system
+//    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
+//    if (whitePixels.size() > 0) {
+//        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
+//    }
 
     //  convert OpenCV mats to Cinder-usable images
     ImageSourceRef imageRef = fromOcv(tempDiff);
     Surface8u tempSurface = Surface8u(imageRef);
     
-    if (!mTexture) {
-        std::cout << "update::Creating new texture" << std::endl;
-        mTexture = ci::gl::Texture::create(imageRef);
-    } else {
-        mTexture->update(tempSurface);
-    }
+//    if (!mTexture) {
+//        std::cout << "update::Creating new texture" << std::endl;
+//        mTexture = ci::gl::Texture::create(imageRef);
+//    } else {
+//        mTexture->update(tempSurface);
+//    }
 }
 
 void LogoProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
-    if (mTexture) {
-        gl::draw(mTexture);
-    }
+//    if (mTexture) {
+//        gl::draw(mTexture);
+//    }
 
     //  Draw the FPS
     ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
@@ -196,8 +207,23 @@ void LogoProjectApp::printDevices()
 {
     std::cout << "Getting devices, number attached: " <<  Capture::getDevices().size() << std::endl;
     for( const auto &device : Capture::getDevices() ) {
-        console() << "Device: " << device->getName() << endl;
+        console() << "Device: " << device->getName() << ", Id# " << device->getUniqueId() << endl;
     }
+}
+
+//
+//  return the DepthSense camera
+//
+ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
+{
+    for( const auto &device : Capture::getDevices() ) {
+        console() << "Device: " << device->getName() << ", Id# " << device->getUniqueId() << endl;
+        if (device->getName().find("DepthSense") != std::string::npos) {
+            return device;
+        }
+    }
+    std::cout << "No DepthSense Camera attached" << std::endl;
+    return 0;
 }
 
 //
@@ -226,7 +252,6 @@ std::vector<ci::vec2> LogoProjectApp::getWhitePixels(cv::Mat &mat)
     for ( int y = 0; y < mat.rows; y++) {
         for ( int x = 0; x < mat.cols; x++) {
             if (mat.at<unsigned char>(y, x) == 255) {
-                //                std::cout << "white pixel at " << x << ", " << y << std::endl;
                 whitePixels.push_back(ci::vec2(x, y));
             }
         }

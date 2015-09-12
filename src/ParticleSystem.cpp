@@ -16,17 +16,18 @@ ParticleSystemRef ParticleSystem::create()
 }
 
 ParticleSystem::ParticleSystem()
+: mIsFirst(true)
+, mParticleCount(100)
 {}
 
 ParticleSystem::~ParticleSystem()
 {
     std::cout << "Calling particle system destructor" << std::endl;
     glDeleteVertexArrays(1, &mVAO);
-    glDeleteBuffers(1, &mPositionBufferA);
-    glDeleteBuffers(1, &mPositionBufferB);
-    //glDeleteBuffers(2, mParticleBufferIDs);
-    //glDeleteTransformFeedbacks(1, mTransformFeedbackIDs);
-    
+    glDeleteBuffers(1, &mParticleBufferA);
+    glDeleteBuffers(1, &mParticleBufferB);
+    glDeleteTransformFeedbacks(1, &mTFBufferA);
+    glDeleteTransformFeedbacks(1, &mTFBufferB);
 }
 
 void ParticleSystem::setup()
@@ -38,7 +39,6 @@ void ParticleSystem::setup()
     mLastMousePos = ci::vec2(0.0f, 0.0f);
     
     //  array of values
-    mParticleCount = 200000;
     GLfloat positionData[mParticleCount * 7]; // two slots for position, two for velocity, three for color
     
     for (int i = 0; i < mParticleCount; i++) {
@@ -62,14 +62,20 @@ void ParticleSystem::setup()
     
     std::cout << "Sizeof positionData: " << sizeof(positionData) << std::endl;
     
+    //  create transform feedback buffers
+    glGenTransformFeedbacks(1, &mTFBufferA);
+    glGenTransformFeedbacks(1, &mTFBufferB);
+    //glGenTransformFeedbacks(2, mTransformFeedbacks);
+    
+    
     //  create two buffers to ping-pong back and forth with position data
-    glGenBuffers(1, &mPositionBufferA);
-    glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferA);
+    glGenBuffers(1, &mParticleBufferA);
+    glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STREAM_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    glGenBuffers(1, &mPositionBufferB);
-    glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferB);
+    glGenBuffers(1, &mParticleBufferB);
+    glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferB);
     glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), 0, GL_STREAM_DRAW); // don't initialize immediately
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
@@ -155,7 +161,7 @@ void ParticleSystem::draw()
     glEnable(GL_RASTERIZER_DISCARD);
     
     //  specify the source buffer
-    glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferA);
+    glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glEnableVertexAttribArray(mPosAttrib);
     glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
     
@@ -167,7 +173,7 @@ void ParticleSystem::draw()
     
     
     //  specify target buffer
-    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, mPositionBufferB);
+    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBufferB);
     
     glBeginTransformFeedback(GL_POINTS);
     glDrawArrays(GL_POINTS, 0, mParticleCount);
@@ -178,11 +184,11 @@ void ParticleSystem::draw()
     
     glFlush();
     
-    std::swap(mPositionBufferA, mPositionBufferB);
+    std::swap(mParticleBufferA, mParticleBufferB);
     
     glDisable(GL_RASTERIZER_DISCARD);
     
-    glBindBuffer(GL_ARRAY_BUFFER, mPositionBufferA);
+    glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glEnableVertexAttribArray(mPosAttrib);
     glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
     glEnableVertexAttribArray(mVelAttrib);

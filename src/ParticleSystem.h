@@ -31,7 +31,9 @@ protected:
 private:
     int         mParticleCount;
     GLuint      mVAO;
-    GLuint      mPositionBufferA, mPositionBufferB;
+    GLuint      mParticleBufferA, mParticleBufferB;
+    GLuint      mTFBufferA, mTFBufferB;
+    //GLuint      mTransformFeedbacks[2];
     GLuint      mShaderProgram;
 
     GLint       mPosAttrib;
@@ -46,5 +48,6 @@ private:
     ci::vec2    normalizeMousePos(ci::ivec2 pos);
     ci::ivec2   mLastMousePos;
     
+    bool        mIsFirst;
     
 };
