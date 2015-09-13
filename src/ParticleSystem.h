@@ -17,14 +17,14 @@ typedef std::shared_ptr<ParticleSystem> ParticleSystemRef;
 class ParticleSystem
 {
 public:
-    static ParticleSystemRef create();
+    static ParticleSystemRef create(float &posArray);
     ~ParticleSystem();
 
-    void setup();
+    void setup(float &posArray);
     void update();
     void updateMouse(ci::ivec2 pos);
     void draw();
-    
+
 protected:
     ParticleSystem();
     
@@ -41,18 +41,18 @@ private:
     GLint       mPosAttrib;
     GLint       mVelAttrib;
     GLint       mColAttrib;
-//    GLint       mNewPosAttrib;
+    //GLint       mNewPosAttrib;
     GLint       mMousePosUniform;
     GLint       mNumNewPosUniform;
     GLint       mNewPosUniform;
-
-    const GLchar * loadShaderData(std::string path);
-    std::string loadShaderSource(std::string path);
-    GLuint createShader(GLenum type, const GLchar* src);
     
-    ci::vec2    normalizeMousePos(ci::ivec2 pos);
+    float *     mPosArrayPointer;
+
+    //const GLchar *  loadShaderData(std::string path);
+    std::string     loadShaderSource(std::string path);
+    GLuint          createShader(GLenum type, const GLchar* src);
+    
     ci::ivec2   mLastMousePos;
     
-    bool        mIsFirst;
-    
+    //bool        mIsFirst;
 };

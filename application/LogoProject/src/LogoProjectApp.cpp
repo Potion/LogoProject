@@ -51,6 +51,12 @@ class LogoProjectApp : public App {
     std::vector<ci::vec2>   getWhitePixels(cv::Mat &mat);
     ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
     void                sendRandomPoint(ci::vec2 point);
+    void                update250RandPoints(std::vector<ci::vec2> &vector);
+    
+    float               mNewPositions[500];
+    
+    ci::vec2            normalizePosition(ci::vec2 &pos, int width, int height);
+    
 };
 
 void LogoProjectApp::setup()
@@ -69,7 +75,7 @@ void LogoProjectApp::setup()
     //  print out OpenGL version
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
-    mParticles = ParticleSystem::create();
+    mParticles = ParticleSystem::create(*mNewPositions);
     
     //  camera
     if (!findDepthSense()) {
@@ -91,7 +97,7 @@ void LogoProjectApp::setup()
     mPrevMat = cv::Mat(480, 640, CV_8U);
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
-    mThreshold = 20;
+    mThreshold = 70;
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )
@@ -172,6 +178,7 @@ void LogoProjectApp::update()
     std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
     if (whitePixels.size() > 0) {
 //        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
+        update250RandPoints(whitePixels);
     }
 
     //  convert OpenCV mats to Cinder-usable images
@@ -272,6 +279,84 @@ ci::vec2 LogoProjectApp::chooseRandomWhiteSpot(std::vector<ci::vec2> &vector)
 void LogoProjectApp::sendRandomPoint(ci::vec2 point)
 {
     mParticles->updateMouse(point);
+}
+
+void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
+{
+//    std::cout << "New Frame! ******************************" << std::endl;
+    
+//    std::cout << "******" << vector.size() << " particles!" << std::endl;
+    //  if we have 250 or less, send all of them to the particle system
+    if (vector.size() < 251) {
+        //std::cout << "250 or Fewer!!!!" << std::endl;
+        int index = 0;
+        
+        //  grab all positions
+        for (ci::vec2 eachVector : vector) {
+            eachVector = normalizePosition(eachVector, 640, 480);
+            mNewPositions[index] = eachVector.x;
+            mNewPositions[index + 1] = eachVector.y;
+            index += 2;
+        }
+        
+        //  fill the rest with 0.0, 0.0
+        for (int i = index; i < 500; i++) {
+            mNewPositions[index] = 0.0f;
+        }
+    }
+    
+    //  otherwise, pick a random sampling of 250
+    else {
+        //std::cout << "251 or more!!!" << std::endl;
+        //  make a list from 1 to how many white pixels and shuffle it
+        std::vector<unsigned int> indices(vector.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        std::random_shuffle(indices.begin(), indices.end());
+        
+//        std::cout << "    The new order: " << std::endl;
+//        for (int i = 0; i < indices.size(); i++) {
+//            std::cout << "        index: " << indices[i] << std::endl;
+//        }
+        
+        //  put the first 250 in the array
+        for (int i = 0; i < 250; i+=2) {
+            vector[indices[i]] = normalizePosition(vector[indices[i]], 640, 480);
+            mNewPositions[i] = vector[indices[i]].x;
+            mNewPositions[i+1] = vector[indices[i]].y;
+        }
+    }
+    
+    //ci::app::console() << "LogoProjectApp::send250...: Address of mNewPositions: " << mNewPositions << std::endl;
+    
+//    std::cout << "LogoProjectApp::update250...: first ten values of array: " << std::endl;
+//    for (int i = 0; i < 10; i++) {
+//        std::cout << "    " << mNewPositions[i] << std::endl;
+//    }
+
+//    for (int i = 0; i < 250; i++) {
+//        std::cout << "new position: x: " << mNewPositions[i] << ", y: " << mNewPositions[i+1] << std::endl;
+//    }
+}
+
+ci::vec2 LogoProjectApp::normalizePosition(ci::vec2 &pos, int width, int height)
+{
+    ci::vec2    normPos;
+    float normX, normY;
+    normX = (float)pos.x / (float)width;
+    normX *= 2.0f;
+    normX -= 1.0f;
+    
+    normY = (float)pos.y / (float)height;
+    normY *= 2.0f;
+    normY -= 1.0f;
+    normY *= -1.0f;
+    
+    normX = glm::clamp(normX, -1.0f, 1.0f);
+    normY = glm::clamp(normY, -1.0f, 1.0f);
+    
+    normPos.x = normX;
+    normPos.y = normY;
+    return normPos;
 }
 
 CINDER_APP( LogoProjectApp, RendererGl )

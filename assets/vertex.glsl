@@ -15,9 +15,11 @@ out vec2 outVel;
 out vec3 outCol;
 
 
-
-// generate a pseudo random direction based on particle's current position
-// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+//******************************************
+//  generate a pseudo random direction based on particle's current position
+//  http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+//  generates number between 0.0 and 1.0
+//******************************************
 float getRandomFloat(vec2 currentPos) {
     return fract(sin(dot(currentPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
     float a = 12.9898;
@@ -28,6 +30,9 @@ float getRandomFloat(vec2 currentPos) {
     return fract(sin(sn) * c);
 }
 
+//******************************************
+//  generate a direction based on a value between 0.0 and 1.0
+//******************************************
 vec2 getDir(float value)
 {
     vec2 vel;
@@ -39,7 +44,9 @@ vec2 getDir(float value)
     return vel;
 }
 
-
+//******************************************
+//  map a floating point within a range
+//******************************************
 float mapFloat(float value, float inputMin, float inputMax, float outputMin, float outputMax)
 {
     const float Epsilon = 0.0000001;
@@ -58,6 +65,9 @@ float mapFloat(float value, float inputMin, float inputMax, float outputMin, flo
     return outVal;
 }
 
+//******************************************
+//  main
+//******************************************
 void main() {
     vec2 gravity = vec2(0.0, -0.0005);
     float max = 0.05;
@@ -105,7 +115,12 @@ void main() {
         outVel = getDir(newFloat);
         outVel *= newSpeed;
         //outPos = mousePos;
-        outPos = newPositions[249];
+        //outPos = newPositions[249];
+        
+        // pick random new position within array of white pixels
+        float newNum = mapFloat(newFloat, 0.0, 1.0, 0.0, 249.9);
+        int newIndex = int(newNum);
+        outPos = newPositions[newIndex];
     }
     
     outCol = inCol;

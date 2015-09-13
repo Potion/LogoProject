@@ -8,16 +8,16 @@
 
 #include "ParticleSystem.h"
 
-ParticleSystemRef ParticleSystem::create()
+ParticleSystemRef ParticleSystem::create(float &posArray)
 {
     ParticleSystemRef ref(new ParticleSystem());
-    ref->setup();
+    ref->setup(posArray);
     return ref;
 }
 
 ParticleSystem::ParticleSystem()
-: mIsFirst(true)
-, mParticleCount(10000)
+//: mIsFirst(true)
+: mParticleCount(10000)
 , mMaxNewPositions(250)
 {}
 
@@ -31,7 +31,7 @@ ParticleSystem::~ParticleSystem()
     //glDeleteTransformFeedbacks(1, &mTFBufferB);
 }
 
-void ParticleSystem::setup()
+void ParticleSystem::setup(float &posArray)
 {
     //  create and bind the vao
     glGenVertexArrays(1, &mVAO);
@@ -146,13 +146,21 @@ void ParticleSystem::setup()
     std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "mNumNewPosUniform: " << mNumNewPosUniform << std::endl;
     std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
+    
+    mPosArrayPointer = &posArray;
 }
 
+//
+//
+//
 void ParticleSystem::update()
 {
     
 }
 
+//******************************************
+//  temp method for debugging
+//******************************************
 void ParticleSystem::updateMouse(ci::ivec2 pos)
 {
     //glLinkProgram(mShaderProgram);
@@ -165,26 +173,35 @@ void ParticleSystem::updateMouse(ci::ivec2 pos)
 //    glUniform2fv(mMousePosUniform, 1, mousePosArray);
 }
 
+//******************************************
+//  draw function; main updates happen here
+//******************************************
 void ParticleSystem::draw()
 {
     //glLinkProgram(mShaderProgram);
     glUseProgram(mShaderProgram);
-    ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
+    //ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
     
 //    std::vector<ci::vec2> wPixels = getWithPixles();
 //    ci::vec2 myPix = wPixels[ random(0.wPixels.size()];
-    float mousePosArray[] = {normMousePos.x, normMousePos.y};
-    glUniform2fv(mMousePosUniform, 1, mousePosArray);
+    //float mousePosArray[] = {normMousePos.x, normMousePos.y};
+    //glUniform2fv(mMousePosUniform, 1, mousePosArray);
     
     //  make test array
-    float array[500];
-    float increment = (float)2.0 / (float)250.0;
-    for (int i = 0; i < 250; i++) {
-        array[i*2 + 0] = -1.0 + (increment * (float)i);
-        array[i*2 + 1] = 0.0f;
-    }
+//    float array[500];
+//    float increment = (float)2.0 / (float)250.0;
+//    for (int i = 0; i < 250; i++) {
+//        array[i*2 + 0] = -1.0 + (increment * (float)i);
+//        array[i*2 + 1] = 0.0f;
+//    }
     
-    glUniform2fv(mNewPosUniform, 250, array);
+    //glUniform2fv(mNewPosUniform, 250, array);
+    glUniform2fv(mNewPosUniform, 250, mPosArrayPointer);
+    
+//    std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
+//    for (int i = 0; i < 10; i++) {
+//        std::cout << "    " << mPosArrayPointer[i] << std::endl;
+//    }
     
     //ci::gl::clear(ci::Color(0, 0, 0));
     //glClear(GL_COLOR_BUFFER_BIT);
@@ -233,32 +250,39 @@ void ParticleSystem::draw()
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
     
+    //ci::app::console() << "ParticleSystem::draw: pointer address:" << mPosArrayPointer << std::endl;
+    
 }
 
+//******************************************
 //  loads data as char * from outside source
 //  note this function does not load properly
-const GLchar * ParticleSystem::loadShaderData(std::string path)
-{
-    std::cout << "ParticleSystem::loadShaderData: " << path << std::endl;
-    std::string shaderCode;
-    std::ifstream shaderStream(ci::app::getAssetPath(path).string(), std::ios::in);
-    if (shaderStream.is_open()) {
-        std::string Line = "";
-        while (getline(shaderStream, Line)) {
-            shaderCode += "\n" + Line;
-        }
-        shaderStream.close();
-        const char * code = shaderCode.c_str();
-        //std::cout << code << std::endl;
-        return code;
-    }
-    else {
-        std::cout << "Error loading shader: " << path << std::endl;
-        getchar();
-        return 0;
-    }
-}
+//******************************************
+//const GLchar * ParticleSystem::loadShaderData(std::string path)
+//{
+//    std::cout << "ParticleSystem::loadShaderData: " << path << std::endl;
+//    std::string shaderCode;
+//    std::ifstream shaderStream(ci::app::getAssetPath(path).string(), std::ios::in);
+//    if (shaderStream.is_open()) {
+//        std::string Line = "";
+//        while (getline(shaderStream, Line)) {
+//            shaderCode += "\n" + Line;
+//        }
+//        shaderStream.close();
+//        const char * code = shaderCode.c_str();
+//        //std::cout << code << std::endl;
+//        return code;
+//    }
+//    else {
+//        std::cout << "Error loading shader: " << path << std::endl;
+//        getchar();
+//        return 0;
+//    }
+//}
 
+//******************************************
+//  load shader from plain text
+//******************************************
 std::string ParticleSystem::loadShaderSource(std::string path)
 {
     std::ifstream in(ci::app::getAssetPath(path).string());
@@ -267,7 +291,9 @@ std::string ParticleSystem::loadShaderSource(std::string path)
     return contents;
 }
 
-// create the shader and prints out debugging info
+//******************************************
+// create shader and print out debugging info
+//******************************************
 GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
 {
     GLuint shader = glCreateShader(type);
@@ -288,23 +314,23 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
     return shader;
 }
 
-ci::vec2 ParticleSystem::normalizeMousePos(ci::ivec2 pos)
-{
-    ci::vec2    normPos;
-    float normX, normY;
-    normX = (float)pos.x / (float)ci::app::getWindowWidth();
-    normX *= 2.0f;
-    normX -= 1.0f;
-
-    normY = (float)pos.y / (float)ci::app::getWindowHeight();
-    normY *= 2.0f;
-    normY -= 1.0f;
-    normY *= -1.0f;
-
-    normX = glm::clamp(normX, -1.0f, 1.0f);
-    normY = glm::clamp(normY, -1.0f, 1.0f);
-    
-    normPos.x = normX;
-    normPos.y = normY;
-    return normPos;
-}
+//ci::vec2 ParticleSystem::normalizeMousePos(ci::ivec2 pos)
+//{
+//    ci::vec2    normPos;
+//    float normX, normY;
+//    normX = (float)pos.x / (float)ci::app::getWindowWidth();
+//    normX *= 2.0f;
+//    normX -= 1.0f;
+//
+//    normY = (float)pos.y / (float)ci::app::getWindowHeight();
+//    normY *= 2.0f;
+//    normY -= 1.0f;
+//    normY *= -1.0f;
+//
+//    normX = glm::clamp(normX, -1.0f, 1.0f);
+//    normY = glm::clamp(normY, -1.0f, 1.0f);
+//    
+//    normPos.x = normX;
+//    normPos.y = normY;
+//    return normPos;
+//}
