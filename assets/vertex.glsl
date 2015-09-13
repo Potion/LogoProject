@@ -1,8 +1,8 @@
 #version 150 core
 
 uniform vec2 mousePos;
-uniform int numNewPositions;
-uniform vec2 newPositions[250];
+//uniform int numNewPositions;
+uniform vec2 newPositions[100];
 
 in vec2 inPos;
 in vec2 inVel;
@@ -63,6 +63,7 @@ float mapFloat(float value, float inputMin, float inputMax, float outputMin, flo
     return outVal;
 }
 
+
 //******************************************
 //  main
 //******************************************
@@ -71,14 +72,13 @@ void main() {
     float max = 0.05;
     float maxSquared = max * max;
     
-    int number = numNewPositions;
-    
-    vec2 array[250] = newPositions;
-//    vec2 firstPos = newPositions[0];
+    //int number = numNewPositions;
     
     outPos = inPos;
     outVel = inVel;
     outVel += gravity;
+    
+    //outCol = vec3(0.0, 1.0, 0.0);
     
     // limit speed
     float speedSquared = dot(outVel, outVel);
@@ -89,36 +89,38 @@ void main() {
     
     outPos += outVel;
     
-    // keep in frame
-    if (inPos.y < -1.0) {
-        outPos.x = 0.0;
-        outPos.y = 0.0;
+    //  keep in frame
+    if (outPos.y < -1.0) {
+        //  reset velocity
+        //  use last position to generate random number for velocity direction
+        vec2 randomSeed = inPos + vec2(inCol.r, inCol.g);
+        vec2 randomSeed2 = inPos + vec2(inCol.g, inCol.b);
+
+        float newFloat = getRandomFloat(randomSeed);
+        float newSpeed = getRandomFloat(randomSeed2);
         
-        // reset velocity and position
         
-        // use position to generate random number for velocity direction
-        float newFloat = getRandomFloat(inPos);
+//        //  use a different vector to generate a random number for velocity length
+//        vec2 altVec;
+//        if (inPos.x != 0.0 && inPos.y != 0.0) {
+//            altVec = inPos + vec2(1.0/inPos.x, 1.0/inPos.y);
+//        } else {
+//            altVec = inPos;
+//        }
         
-        // use a different vector to generate a random number for velocity length
-        vec2 altVec;
-        if (inPos.x != 0.0 && inPos.y != 0.0) {
-            altVec = inPos + vec2(1.0/inPos.x, 1.0/inPos.y);
-        } else {
-            altVec = inPos;
-        }
-        
-        float newSpeed = getRandomFloat(altVec);
         newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.06, 0.15); // make min output number smaller; why does that happen?
         
         outVel = getDir(newFloat);
         outVel *= newSpeed;
-        //outPos = mousePos;
-        //outPos = newPositions[249];
-        
-        // pick random new position within array of white pixels
-        float newNum = mapFloat(newFloat, 0.0, 1.0, 0.0, 249.9);
+
+        //  reset position
+        //  pick random new position within array of white pixels
+        float newNum = mapFloat(newFloat, 0.0, 1.0, 0.0, 99.9);
         int newIndex = int(newNum);
         outPos = newPositions[newIndex];
+        //outPos = mousePos;
+        //outPos = vec2(0.33, -1.73076);
+        //outCol = vec3(1.0, 0.0, 0.0);
     }
     
     outCol = inCol;

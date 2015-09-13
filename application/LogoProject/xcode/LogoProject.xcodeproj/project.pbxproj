@@ -298,6 +298,7 @@
 		8D1107320486CEB800E47090 /* LogoProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LogoProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92359B6F1B9E30BC0019FFE6 /* vertex.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		92359B701B9E30F00019FFE6 /* frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = frag.glsl; sourceTree = "<group>"; };
+		92794DFB1BA60B1F006330FF /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		C9BECCEE0A6B4819BD53E7F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6D522D95C7A402F8383B4CE /* LogoProject_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LogoProject_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -477,6 +478,7 @@
 				389F95441B9F5197000AC7A2 /* ParticleSystem.cpp */,
 				389F95451B9F5197000AC7A2 /* ParticleSystem.h */,
 				38EB3E541BA3542000F44445 /* CinderOpenCV.h */,
+				92794DFB1BA60B1F006330FF /* Common.h */,
 			);
 			name = src;
 			path = ../../../src;

@@ -1,0 +1,14 @@
+//
+//  Common.h
+//  LogoProject
+//
+//  Created by Jennifer Presto on 9/13/15.
+//
+//
+
+#pragma once
+
+namespace logo {
+    const int NUM_NEW_POSITIONS = 100;
+    const int NUM_PARTICLES     = 1000;
+}

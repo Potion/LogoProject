@@ -13,6 +13,7 @@
 #include "CinderOpenCV.h"
 
 #include "ParticleSystem.h"
+#include "Common.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -34,7 +35,6 @@ class LogoProjectApp : public App {
     void                    restartCamera();
     CaptureRef              mCapture;
     gl::TextureRef          mTexture;
-    //cv::VideoCapture      mOpenCVCam;
     
     //  openCV
     cv::Mat             convertToOCVMat(ci::Surface &surface);
@@ -51,10 +51,10 @@ class LogoProjectApp : public App {
     std::vector<ci::vec2>   getWhitePixels(cv::Mat &mat);
     ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
     void                sendRandomPoint(ci::vec2 point);
-    void                update250RandPoints(std::vector<ci::vec2> &vector);
+    void                updateNewPositions(std::vector<ci::vec2> &vector);
     void                resetPosArray();
     
-    float               mNewPositions[500];
+    float               mNewPositions[logo::NUM_NEW_POSITIONS * 2];
     
     ci::vec2            normalizePosition(ci::vec2 &pos, int width, int height);
     
@@ -90,10 +90,10 @@ void LogoProjectApp::setup()
         CI_LOG_EXCEPTION( "Failed to init capture ", exc );
     }
     
-    //mOpenCVCam = cv::VideoCapture(0);
-    //if (!mOpenCVCam.isOpened()) {
-    //    std::cout << "Problems!!" << std::endl;
-    //}
+    //  initialize array
+    for (int i = 0; i < logo::NUM_NEW_POSITIONS * 2; i++) {
+        mNewPositions[i] = ci::randFloat(-1.0f, 1.0f);
+    }
     
     mPrevMat = cv::Mat(480, 640, CV_8U);
     mLastGoodFrame = 1;
@@ -107,7 +107,10 @@ void LogoProjectApp::mouseDown( MouseEvent event )
 
 void LogoProjectApp::mouseMove( MouseEvent event )
 {
-    mParticles->updateMouse(event.getPos());
+    ci::vec2 normPos(float(event.getPos().x), float(event.getPos().y));
+    normPos = normalizePosition(normPos, 640, 480);
+    //std::cout << "Moved mouse: " << normPos << std::endl;
+    mParticles->updateMouse(normPos);
 }
 
 void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
@@ -118,12 +121,13 @@ void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
 void LogoProjectApp::update()
 {
     
-    //  wait until we have both images before we start comparison
+    //  if we don't have a new frame, skip the rest
     if (!mCapture || !mCapture->checkNewFrame()) {
         //  if we're not getting new frames at all, stop and restart capture
         if (ci::app::getElapsedFrames() - mLastGoodFrame > mNumFramesForRestart) {
             restartCamera();
         }
+        //resetPosArray();
         return;
     }
 
@@ -145,46 +149,26 @@ void LogoProjectApp::update()
     //  flip it
     cv::flip(matPreFlip, blackAndWhite, 1);
     
-    //std::cout << "\n\nNew Frame***********************\n" << std::endl;
-    //std::cout << "mCurrentMat->size-> " << mCurrentMat.size() <<" " << mCurrentMat.type() << std::endl;
-    //std::cout << "mPrevMat->size-> " << mPrevMat.size() << " " << mPrevMat.type() << std::endl;
-    //std::cout << "mDiffMat->size-> " << mDiffMat.size() << " " << mDiffMat.type() << std::endl;
-    //std::cout << "tempDiff->size-> " << tempDiff.size() << " " << tempDiff.type() << std::endl;
-    //std::cout << "blackAndWhite->size-> " << blackAndWhite.size() << " " << blackAndWhite.type() << std::endl;
-    
-//    if ( blackAndWhite.type() == mPrevMat.type() )
-//    {
-        mPrevMat.copyTo( tempCopyPrev );
-        cv::absdiff(blackAndWhite, tempCopyPrev, tempDiff );
-//    }
-//    else {
-//        std::cout << "The types do not match" << std::endl;
-//    }
+    mPrevMat.copyTo( tempCopyPrev );
+    cv::absdiff(blackAndWhite, tempCopyPrev, tempDiff );
 
-    //  save the B&W version as the previous image
+    //  save the B&W, flipped version as the previous image
     blackAndWhite.copyTo(mPrevMat);
     
-    //std::cout << "\n\nPostCopy***********************\n" << std::endl;
-    //std::cout << "mCurrentMat->size-> " << mCurrentMat.size() <<" " << mCurrentMat.type() << std::endl;
-    //std::cout << "mPrevMat->size-> " << mPrevMat.size() << " " << mPrevMat.type() << std::endl;
-    //std::cout << "mDiffMat->size-> " << mDiffMat.size() << " " << mDiffMat.type() << std::endl;
-    //std::cout << "tempDiff->size-> " << tempDiff.size() << " " << tempDiff.type() << std::endl;
-    //std::cout << "blackAndWhite->size-> " << blackAndWhite.size() << " " << blackAndWhite.type() << std::endl;
-    
-
     //  threshold the changes
     cv::threshold(tempDiff, tempDiff, mThreshold, 255, CV_THRESH_BINARY);
     
     //  send one random movement location to particle system
     std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
     if (whitePixels.size() > 0) {
-//        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
-        update250RandPoints(whitePixels);
+        //sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
+        updateNewPositions(whitePixels);
     } else {
+        //std::cout << "LogoProjectApp::update: no movement pixels" << std::endl;
         resetPosArray();
     }
 
-    //  convert OpenCV mats to Cinder-usable images
+    //  for debugging, convert OpenCV mats to Cinder-usable images
     ImageSourceRef imageRef = fromOcv(tempDiff);
     Surface8u tempSurface = Surface8u(imageRef);
     
@@ -203,6 +187,7 @@ void LogoProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
+    //  debugging only
     if (mTexture) {
         gl::draw(mTexture);
     }
@@ -239,7 +224,7 @@ ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
 }
 
 //******************************************
-//  restart the camera if it hasn't given a new frame within certain number of frames
+//  restart the camera (called if no new frame within certain number of frames)
 //******************************************
 void LogoProjectApp::restartCamera()
 {
@@ -299,14 +284,13 @@ void LogoProjectApp::sendRandomPoint(ci::vec2 point)
 //******************************************
 //  choose random 250-point sampling of white pixels
 //******************************************
-void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
+void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
 {
-    std::cout << "New Frame! ******************************" << ci::app::getElapsedFrames() << std::endl;
+    //std::cout << "LogoProjectApp::updateNewPositions: " << vector.size() << " particles, " << "frame #" << ci::app::getElapsedFrames() << std::endl;
     
-//    std::cout << "******" << vector.size() << " particles!" << std::endl;
-    //  if we have 250 or less, send all of them to the particle system
-    if (vector.size() < 251) {
-        //std::cout << "250 or Fewer!!!!" << std::endl;
+    //  if we have max position number or less, send all of them to the particle system
+    if (vector.size() < logo::NUM_NEW_POSITIONS) {
+        //std::cout << "Less than" << logo::NUM_NEW_POSITIONS << "!!!!" << std::endl;
         int index = 0;
         
         //  grab all positions
@@ -317,53 +301,32 @@ void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
             index += 2;
         }
         
-        //  fill the rest with 0.0, 0.0
-        for (int i = index; i < 500; i++) {
-            mNewPositions[index] = 0.0f;
+        //  fill the rest with points offscreen
+        for (int i = index; i < logo::NUM_NEW_POSITIONS * 2; i+=2) {
+            mNewPositions[i] = ci::Rand::randFloat(-1.0, 1.0);
+            mNewPositions[i+1] = ci::Rand::randFloat(-2.0, -1.5);
         }
     }
     
-    //  otherwise, pick a random sampling of 250
+    //  otherwise, pick a random sampling
     else {
-        //std::cout << "251 or more!!!" << std::endl;
+        //std::cout << logo::NUM_NEW_POSITIONS << " or more!!!!" << std::endl;
         //  make a list from 1 to how many white pixels and shuffle it
         std::vector<unsigned int> indices(vector.size());
         std::iota(indices.begin(), indices.end(), 0);
         std::random_shuffle(indices.begin(), indices.end());
         
-//        std::cout << "    The new order: " << std::endl;
-//        for (int i = 0; i < indices.size(); i++) {
-//            std::cout << "        index: " << indices[i] << std::endl;
-//        }
-        
-        //  put the first 250 in the array
-        for (int i = 0; i < 250; i+=2) {
+        //  put the first ones in the array
+        for (int i = 0; i < logo::NUM_NEW_POSITIONS; i+=2) {
             vector[indices[i]] = normalizePosition(vector[indices[i]], 640, 480);
-            if (mNewPositions[i] == vector[indices[i]].x || mNewPositions[i+1] == vector[indices[i]].y) {
-                std::cout << "Not changing: index # " << i << std::endl;
-            }
-            if (mNewPositions[i] == vector[indices[i]].x) {
-                std::cout << "not changing: x" << std::endl;
-            }
-            if (mNewPositions[i+1] == vector[indices[i]].y) {
-                std::cout << "not changing: y" << std::endl;
-            }
             mNewPositions[i] = vector[indices[i]].x;
             mNewPositions[i+1] = vector[indices[i]].y;
         }
     }
     
-    //ci::app::console() << "LogoProjectApp::send250...: Address of mNewPositions: " << mNewPositions << std::endl;
-    
-//    std::cout << "LogoProjectApp::update250...: first ten values of array: " << std::endl;
-//    for (int i = 0; i < 10; i++) {
-//        std::cout << "    " << mNewPositions[i] << std::endl;
-//    }
-
-//    for (int i = 0; i < 250; i++) {
-//        std::cout << "new position: x: " << mNewPositions[i] << ", y: " << mNewPositions[i+1] << std::endl;
-//    }
-    
+    //for (int i = 0; i < logo::NUM_NEW_POSITIONS; i++) {
+    //    std::cout << "    " << i << ": x: " << mNewPositions[i*2] << ", y: " << mNewPositions[i*2 + 1] << std::endl;
+    //}
 }
 
 //******************************************
@@ -371,9 +334,11 @@ void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
 //******************************************
 void LogoProjectApp::resetPosArray()
 {
-    for (int i = 0; i < 250; i+=2) {
-        mNewPositions[i] = ci::randFloat(-1.0, 1.0);
-        mNewPositions[i+1] = ci::randFloat(-2.0, -1.5);
+    //std::cout << "LogoProjectApp::resetPosArray: " << std::endl;
+    for (int i = 0; i < logo::NUM_NEW_POSITIONS; i++) {
+        mNewPositions[i*2] = ci::randFloat(-1.0, 1.0);
+        mNewPositions[i*2 + 1] = ci::randFloat(-2.0, -1.5);
+        //std::cout << "    " << i << ": x: " << mNewPositions[i*2] << ", y: " << mNewPositions[i*2 + 1] << std::endl;
     }
 }
 
