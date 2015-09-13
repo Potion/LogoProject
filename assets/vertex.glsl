@@ -8,8 +8,6 @@ in vec2 inPos;
 in vec2 inVel;
 in vec3 inCol;
 
-//in vec2 newPositions[250];
-
 out vec2 outPos;
 out vec2 outVel;
 out vec3 outCol;
@@ -21,7 +19,7 @@ out vec3 outCol;
 //  generates number between 0.0 and 1.0
 //******************************************
 float getRandomFloat(vec2 currentPos) {
-    return fract(sin(dot(currentPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    //return fract(sin(dot(currentPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
     float a = 12.9898;
     float b = 78.233;
     float c = 43758.5453;

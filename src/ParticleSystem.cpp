@@ -182,20 +182,9 @@ void ParticleSystem::draw()
     glUseProgram(mShaderProgram);
     //ci::vec2 normMousePos = normalizeMousePos(mLastMousePos);
     
-//    std::vector<ci::vec2> wPixels = getWithPixles();
-//    ci::vec2 myPix = wPixels[ random(0.wPixels.size()];
     //float mousePosArray[] = {normMousePos.x, normMousePos.y};
     //glUniform2fv(mMousePosUniform, 1, mousePosArray);
     
-    //  make test array
-//    float array[500];
-//    float increment = (float)2.0 / (float)250.0;
-//    for (int i = 0; i < 250; i++) {
-//        array[i*2 + 0] = -1.0 + (increment * (float)i);
-//        array[i*2 + 1] = 0.0f;
-//    }
-    
-    //glUniform2fv(mNewPosUniform, 250, array);
     glUniform2fv(mNewPosUniform, 250, mPosArrayPointer);
     
 //    std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
@@ -203,8 +192,7 @@ void ParticleSystem::draw()
 //        std::cout << "    " << mPosArrayPointer[i] << std::endl;
 //    }
     
-    //ci::gl::clear(ci::Color(0, 0, 0));
-    //glClear(GL_COLOR_BUFFER_BIT);
+    std::cout << "ParticleSystem::draw: Test random number generation: " << std::endl;
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -224,6 +212,7 @@ void ParticleSystem::draw()
     //  specify target buffer
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBufferB);
     
+    //  do transform feedback
     glBeginTransformFeedback(GL_POINTS);
     glDrawArrays(GL_POINTS, 0, mParticleCount);
     glEndTransformFeedback();
@@ -235,6 +224,7 @@ void ParticleSystem::draw()
     
     std::swap(mParticleBufferA, mParticleBufferB);
     
+    //  draw the particles
     glDisable(GL_RASTERIZER_DISCARD);
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
@@ -313,6 +303,38 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
     
     return shader;
 }
+
+//******************************************
+// functions from shaders for testing
+//******************************************
+
+//float ParticleSystem::getRandomFloat(ci::vec2 currentPos) {
+//    return fract(sin(dot(currentPos.xy, ci::vec2(12.9898, 78.233))) * 43758.5453);
+//    float a = 12.9898;
+//    float b = 78.233;
+//    float c = 43758.5453;
+//    float dt = dot(currentPos.xy, vec2(a, b));
+//    float sn = mod(dt, 3.14);
+//    return fract(sin(sn) * c);
+//}
+//
+//float ParticleSystem::mapFloat(float value, float inputMin, float inputMax, float outputMin, float outputMax)
+//{
+//    const float Epsilon = 0.0000001;
+//    if (abs(inputMin - inputMax) < Epsilon) {
+//        return outputMin;
+//    }
+//    
+//    float outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
+//    // clamp result
+//    if (outVal > outputMax) {
+//        outVal = outputMax;
+//    }
+//    if (outVal < outputMin) {
+//        outVal = outputMin;
+//    }
+//    return outVal;
+//}
 
 //ci::vec2 ParticleSystem::normalizeMousePos(ci::ivec2 pos)
 //{

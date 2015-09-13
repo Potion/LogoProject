@@ -52,6 +52,7 @@ class LogoProjectApp : public App {
     ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
     void                sendRandomPoint(ci::vec2 point);
     void                update250RandPoints(std::vector<ci::vec2> &vector);
+    void                resetPosArray();
     
     float               mNewPositions[500];
     
@@ -179,6 +180,8 @@ void LogoProjectApp::update()
     if (whitePixels.size() > 0) {
 //        sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
         update250RandPoints(whitePixels);
+    } else {
+        resetPosArray();
     }
 
     //  convert OpenCV mats to Cinder-usable images
@@ -193,6 +196,9 @@ void LogoProjectApp::update()
     }
 }
 
+//******************************************
+//  draw
+//******************************************
 void LogoProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
@@ -207,9 +213,9 @@ void LogoProjectApp::draw()
     mParticles->draw();
 }
 
-//
+//******************************************
 //  print out names of cameras
-//
+//******************************************
 void LogoProjectApp::printDevices()
 {
     std::cout << "Getting devices, number attached: " <<  Capture::getDevices().size() << std::endl;
@@ -218,9 +224,9 @@ void LogoProjectApp::printDevices()
     }
 }
 
-//
+//******************************************
 //  return the DepthSense camera
-//
+//******************************************
 ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
 {
     for( const auto &device : Capture::getDevices() ) {
@@ -232,9 +238,9 @@ ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
     return 0;
 }
 
-//
-//  restart the camera if it hasn't given a new frame in 30 frames
-//
+//******************************************
+//  restart the camera if it hasn't given a new frame within certain number of frames
+//******************************************
 void LogoProjectApp::restartCamera()
 {
     std::cout << "Frame # " << ci::app::getElapsedFrames() << ": LogoProjectApp::restartCamera" << std::endl;
@@ -243,14 +249,17 @@ void LogoProjectApp::restartCamera()
     mLastGoodFrame = ci::app::getElapsedFrames();
 }
 
-//
+//******************************************
 //  convert Cinder surface to OpenCV mat
-//
+//******************************************
 cv::Mat LogoProjectApp::convertToOCVMat(ci::Surface &surface)
 {
     return cv::Mat( surface.getHeight(), surface.getWidth(), CV_MAKETYPE( CV_8U, surface.hasAlpha()?4:3), surface.getData(), surface.getRowBytes() );
 }
 
+//******************************************
+//  get a vector of all white pixels from motion detection
+//******************************************
 std::vector<ci::vec2> LogoProjectApp::getWhitePixels(cv::Mat &mat)
 {
     std::vector<ci::vec2> whitePixels;
@@ -265,6 +274,9 @@ std::vector<ci::vec2> LogoProjectApp::getWhitePixels(cv::Mat &mat)
     return whitePixels;
 }
 
+//******************************************
+//  choose one random white pixel
+//******************************************
 ci::vec2 LogoProjectApp::chooseRandomWhiteSpot(std::vector<ci::vec2> &vector)
 {
     if (vector.size() > 0) {
@@ -276,14 +288,20 @@ ci::vec2 LogoProjectApp::chooseRandomWhiteSpot(std::vector<ci::vec2> &vector)
     }
 }
 
+//******************************************
+//  send one pixel as though it's mouse (debug only)
+//******************************************
 void LogoProjectApp::sendRandomPoint(ci::vec2 point)
 {
     mParticles->updateMouse(point);
 }
 
+//******************************************
+//  choose random 250-point sampling of white pixels
+//******************************************
 void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
 {
-//    std::cout << "New Frame! ******************************" << std::endl;
+    std::cout << "New Frame! ******************************" << ci::app::getElapsedFrames() << std::endl;
     
 //    std::cout << "******" << vector.size() << " particles!" << std::endl;
     //  if we have 250 or less, send all of them to the particle system
@@ -321,6 +339,15 @@ void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
         //  put the first 250 in the array
         for (int i = 0; i < 250; i+=2) {
             vector[indices[i]] = normalizePosition(vector[indices[i]], 640, 480);
+            if (mNewPositions[i] == vector[indices[i]].x || mNewPositions[i+1] == vector[indices[i]].y) {
+                std::cout << "Not changing: index # " << i << std::endl;
+            }
+            if (mNewPositions[i] == vector[indices[i]].x) {
+                std::cout << "not changing: x" << std::endl;
+            }
+            if (mNewPositions[i+1] == vector[indices[i]].y) {
+                std::cout << "not changing: y" << std::endl;
+            }
             mNewPositions[i] = vector[indices[i]].x;
             mNewPositions[i+1] = vector[indices[i]].y;
         }
@@ -336,8 +363,23 @@ void LogoProjectApp::update250RandPoints(std::vector<ci::vec2> &vector)
 //    for (int i = 0; i < 250; i++) {
 //        std::cout << "new position: x: " << mNewPositions[i] << ", y: " << mNewPositions[i+1] << std::endl;
 //    }
+    
 }
 
+//******************************************
+//  fill position array with all points offscreen
+//******************************************
+void LogoProjectApp::resetPosArray()
+{
+    for (int i = 0; i < 250; i+=2) {
+        mNewPositions[i] = ci::randFloat(-1.0, 1.0);
+        mNewPositions[i+1] = ci::randFloat(-2.0, -1.5);
+    }
+}
+
+//******************************************
+//  change position to use -1.0 to 1.0 convention for shaders
+//******************************************
 ci::vec2 LogoProjectApp::normalizePosition(ci::vec2 &pos, int width, int height)
 {
     ci::vec2    normPos;

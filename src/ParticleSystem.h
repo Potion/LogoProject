@@ -54,5 +54,9 @@ private:
     
     ci::ivec2   mLastMousePos;
     
+    //test functions
+//    float getRandomFloat(ci::vec2 currentPos);
+//    mapFloat(float value, float inputMin, float inputMax, float outputMin, float outputMax);
+    
     //bool        mIsFirst;
 };
