@@ -1,8 +1,9 @@
 #version 150 core
 
+const int numNewPositions = 100;
+
 uniform vec2 mousePos;
-//uniform int numNewPositions;
-uniform vec2 newPositions[100];
+uniform vec2 newPositions[numNewPositions];
 
 in vec2 inPos;
 in vec2 inVel;
@@ -34,7 +35,7 @@ float getRandomFloat(vec2 currentPos) {
 vec2 getDir(float value)
 {
     vec2 vel;
-    value *= 3.1415926535897932384626433832795 * 2.0f;
+    value *= (3.1415926535897932384626433832795 * 2.0f);
     //vel.x = cos(randFloat) * 0.13;
     //vel.y = sin(randFloat) * 0.13;
     vel.x = cos(value);
@@ -96,33 +97,25 @@ void main() {
         vec2 randomSeed = inPos + vec2(inCol.r, inCol.g);
         vec2 randomSeed2 = inPos + vec2(inCol.g, inCol.b);
 
-        float newFloat = getRandomFloat(randomSeed);
+        float newVelSeed = getRandomFloat(randomSeed);
+
         float newSpeed = getRandomFloat(randomSeed2);
-        
-        
-//        //  use a different vector to generate a random number for velocity length
-//        vec2 altVec;
-//        if (inPos.x != 0.0 && inPos.y != 0.0) {
-//            altVec = inPos + vec2(1.0/inPos.x, 1.0/inPos.y);
-//        } else {
-//            altVec = inPos;
-//        }
-        
         newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.06, 0.15); // make min output number smaller; why does that happen?
         
-        outVel = getDir(newFloat);
+        outVel = getDir(newVelSeed);
         outVel *= newSpeed;
 
         //  reset position
         //  pick random new position within array of white pixels
-        float newNum = mapFloat(newFloat, 0.0, 1.0, 0.0, 99.9);
+        float topLimit = float(numNewPositions) - 0.1;
+        float newNum = mapFloat(newVelSeed, 0.0, 1.0, 0.0, topLimit);
         int newIndex = int(newNum);
         outPos = newPositions[newIndex];
         //outPos = mousePos;
         //outPos = vec2(0.33, -1.73076);
-        //outCol = vec3(1.0, 0.0, 0.0);
     }
     
     outCol = inCol;
+    gl_PointSize = 15.0f;
     gl_Position = vec4(outPos, 0.0, 1.0);
 }

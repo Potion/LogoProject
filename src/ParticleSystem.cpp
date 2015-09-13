@@ -34,12 +34,13 @@ void ParticleSystem::setup(float &posArray)
     
     mLastMousePos = ci::vec2(0.0f, 0.0f);
     
+    loadTexture();
+    
     //  array of values
     GLfloat positionData[logo::NUM_PARTICLES * 7]; // two slots for position, two for velocity, three for color
     //GLfloat newPositionData[mMaxNewPositions * 2];
     
     for (int i = 0; i < logo::NUM_PARTICLES; i++) {
-        
         //  position is completely random
         float randNum = ci::Rand::randFloat(-1.0f, 1.0f);
         float randNum2 = ci::Rand::randFloat(-1.0f, 1.0f);
@@ -104,7 +105,6 @@ void ParticleSystem::setup(float &posArray)
     mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
-    //mNumNewPosUniform = glGetUniformLocation(mShaderProgram, "numNewPositions");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
     
     std::cout << "Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
@@ -114,16 +114,20 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "mColAttrib: " << mColAttrib << std::endl;
 
     std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
-    //std::cout << "mNumNewPosUniform: " << mNumNewPosUniform << std::endl;
     std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
     
     mPosArrayPointer = &posArray;
     
+    //std::cout << "RandFloat on 1.1, 1.5)" << getRandomFloat(ci::vec2(1.1, 1.5)) << std::endl;
+    //std::cout << "RandFloat on 1.5, 1.7)" << getRandomFloat(ci::vec2(1.5, 1.7)) << std::endl;
+    //std::cout << "RandFloat on 1.9, 1.5)" << getRandomFloat(ci::vec2(1.9, 1.5)) << std::endl;
+    //std::cout << "RandFloat on 0.9, 0.3)" << getRandomFloat(ci::vec2(0.9, 0.3)) << std::endl;
+    
 }
 
-//
-//
-//
+//******************************************
+//  nothing happens in update
+//******************************************
 void ParticleSystem::update()
 {
     
@@ -157,12 +161,7 @@ void ParticleSystem::draw()
     for (int i = 0; i < logo::NUM_NEW_POSITIONS * 2; i++) {
         testArray[i] = mPosArrayPointer[i];
     }
-    
-    //std::cout << "ParticleSystem: draw: print testArray, frame# " << ci::app::getElapsedFrames() << std::endl;
-    //for (int i = 0; i < logo::NUM_NEW_POSITIONS; i++) {
-    //    std::cout << "    " << i << ": (" << testArray[i*2] << ", " << testArray[i*2 + 1] << std::endl;
-    //}
-    
+
     //  pass mouse position
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
@@ -170,13 +169,13 @@ void ParticleSystem::draw()
     //  pass in the array of new positions
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     
-//    std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
-//    for (int i = 0; i < 20; i+=2) {
-//        std::cout << "    x: " << mPosArrayPointer[i] << ", y: " << mPosArrayPointer[i+1] << std::endl;
-//        float randomFloat = getRandomFloat(ci::vec2(mPosArrayPointer[i], mPosArrayPointer[i+1]));
-//        std::cout << "    Random number generated from this: " << randomFloat << std::endl;
-//        std::cout << "    And mapped: " << mapFloat(randomFloat, 0.0, 1.0, 0.0, 250.0) << std::endl;
-//    }
+    //std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
+    //for (int i = 0; i < 20; i+=2) {
+    //    std::cout << "    x: " << mPosArrayPointer[i] << ", y: " << mPosArrayPointer[i+1] << std::endl;
+    //    float randomFloat = getRandomFloat(ci::vec2(mPosArrayPointer[i], mPosArrayPointer[i+1]));
+    //    std::cout << "    Random number generated from this: " << randomFloat << std::endl;
+    //    std::cout << "    And mapped: " << mapFloat(randomFloat, 0.0, 1.0, 0.0, 250.0) << std::endl;
+    //}
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -214,7 +213,6 @@ void ParticleSystem::draw()
     
     //std::cout << "ParticleSystem::draw: Number of primitives: Frame # " << ci::app::getElapsedFrames() << ", Primitives: " << primitives << std::endl;
     
-    
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
@@ -237,6 +235,12 @@ void ParticleSystem::draw()
     
     //  draw the particles
     glDisable(GL_RASTERIZER_DISCARD);
+    
+    //  Cinder openGL calls to render textures as points
+    ci::gl::ScopedTextureBind texScope( mTexture );
+    ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
+    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glEnableVertexAttribArray(mPosAttrib);
@@ -262,6 +266,17 @@ std::string ParticleSystem::loadShaderSource(std::string path)
 
     return contents;
 }
+
+//******************************************
+//  load texture
+//******************************************
+void ParticleSystem::loadTexture()
+{
+    ci::gl::Texture::Format textureFormat;
+    textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
+    mTexture = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
+}
+
 
 //******************************************
 // create shader and print out debugging info

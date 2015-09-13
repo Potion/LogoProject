@@ -31,24 +31,25 @@ protected:
     ParticleSystem();
     
 private:
-    GLuint      mVAO;
-    GLuint      mNewPositions;
-    GLuint      mParticleBufferA, mParticleBufferB;
-    GLuint      mShaderProgram;
+    GLuint              mVAO;
+    GLuint              mNewPositions;
+    GLuint              mParticleBufferA, mParticleBufferB;
+    GLuint              mShaderProgram;
 
-    GLint       mPosAttrib;
-    GLint       mVelAttrib;
-    GLint       mColAttrib;
-    GLint       mMousePosUniform;
-    //GLint       mNumNewPosUniform;
-    GLint       mNewPosUniform;
+    GLint               mPosAttrib;
+    GLint               mVelAttrib;
+    GLint               mColAttrib;
+    GLint               mMousePosUniform;
+    GLint               mNewPosUniform;
     
-    float *     mPosArrayPointer;
+    float *             mPosArrayPointer;
 
-    std::string     loadShaderSource(std::string path);
-    GLuint          createShader(GLenum type, const GLchar* src);
+    std::string         loadShaderSource(std::string path);
+    GLuint              createShader(GLenum type, const GLchar* src);
+    void                loadTexture();
+    ci::gl::TextureRef  mTexture;
     
-    ci::vec2   mLastMousePos;
+    ci::vec2            mLastMousePos;
     
     //test functions
     float getRandomFloat(ci::vec2 currentPos);

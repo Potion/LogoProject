@@ -9,6 +9,6 @@
 #pragma once
 
 namespace logo {
-    const int NUM_NEW_POSITIONS = 100;
-    const int NUM_PARTICLES     = 1000;
+    const int NUM_NEW_POSITIONS = 100; // MUST MATCH VALUE IN VERTEX SHADER
+    const int NUM_PARTICLES     = 10000;
 }
