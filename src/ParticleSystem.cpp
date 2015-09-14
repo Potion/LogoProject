@@ -102,13 +102,6 @@ void ParticleSystem::setup(float &posArray)
     glLinkProgram(mShaderProgram);
     glUseProgram(mShaderProgram);
     
-//    mParticleTex->bind(0);
-//    mPotionTex->bind(1);
-//    //  texture uniform
-//    glUniform1i(mParticleTexUniform, 0);
-//    glUniform1i(mPotionTexUniform, 1);
-
-    
     mPosAttrib = glGetAttribLocation(mShaderProgram, "inPos");
     mVelAttrib = glGetAttribLocation(mShaderProgram, "inVel");
     mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
@@ -177,14 +170,6 @@ void ParticleSystem::draw()
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     
     
-    //std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
-    //for (int i = 0; i < 20; i+=2) {
-    //    std::cout << "    x: " << mPosArrayPointer[i] << ", y: " << mPosArrayPointer[i+1] << std::endl;
-    //    float randomFloat = getRandomFloat(ci::vec2(mPosArrayPointer[i], mPosArrayPointer[i+1]));
-    //    std::cout << "    Random number generated from this: " << randomFloat << std::endl;
-    //    std::cout << "    And mapped: " << mapFloat(randomFloat, 0.0, 1.0, 0.0, 250.0) << std::endl;
-    //}
-    
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
     
@@ -203,52 +188,29 @@ void ParticleSystem::draw()
     //  specify target buffer
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBufferB);
     
-    //  query; hope to debug
-    //GLuint query;
-    //glGenQueries(1, &query);
-    //glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query);
-    
     //  do transform feedback
     glBeginTransformFeedback(GL_POINTS);
     
     glDrawArrays(GL_POINTS, 0, logo::NUM_PARTICLES);
     glEndTransformFeedback();
     
-    ////  query
-    //glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
-    //GLuint primitives;
-    //glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitives);
-    
-    //std::cout << "ParticleSystem::draw: Number of primitives: Frame # " << ci::app::getElapsedFrames() << ", Primitives: " << primitives << std::endl;
-    
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
     
     glFlush();
-    
-    //GLfloat feedback[logo::NUM_PARTICLES * 2];
-    //glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
-    //std::cout << "ParticleSystem::draw: Reading transform feedback info" << std::endl;
-    //for (int i = 0; i < logo::NUM_PARTICLES; i++) {
-    //    std::cout << "    " << i << ": (" << testArray[i*2] << ", " << testArray[i*2 + 1] << ")" << std::endl;
-    //}
-    
-    //std::cout << "ParticleSystem::draw: Reading transform feedback info: WHOLE THING" << std::endl;
-    //for (int i = 0; i < logo::NUM_PARTICLES; i++) {
-    //    std::cout << "    " << i << ": (" << testArray[i*7] << ", " << testArray[i*7 + 1] << ", " << testArray[i*7 + 2] <<", " << testArray[i*7 + 3] <<", " << testArray[i*7 + 4] <<", " << testArray[i*7 + 5] <<", " << testArray[i*7 + 6] <<")" << std::endl;
-    //}
-    
+
     std::swap(mParticleBufferA, mParticleBufferB);
     
     //  draw the particles
     glDisable(GL_RASTERIZER_DISCARD);
     
     //  Cinder openGL calls to render textures as points
-//    glUniform1i(mParticleTexUniform, 0);
+    // glUniform1i(mParticleTexUniform, 0);
     ci::gl::ScopedTextureBind texScope( mParticleTex , 0);
     ci::gl::ScopedTextureBind texScope2(mPotionTex, 1);
     glUniform1i(mPotionTexUniform, 1);
+    
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
     ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -279,7 +241,7 @@ std::string ParticleSystem::loadShaderSource(std::string path)
 }
 
 //******************************************
-//  load texture
+//  load textures
 //******************************************
 void ParticleSystem::loadTextures()
 {
