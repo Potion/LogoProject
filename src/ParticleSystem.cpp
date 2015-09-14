@@ -130,6 +130,9 @@ void ParticleSystem::setup(float &posArray)
     //std::cout << "RandFloat on 1.9, 1.5)" << getRandomFloat(ci::vec2(1.9, 1.5)) << std::endl;
     //std::cout << "RandFloat on 0.9, 0.3)" << getRandomFloat(ci::vec2(0.9, 0.3)) << std::endl;
     
+    std::cout << "Lerp 0.3 to 0.5 by 0.5: " << lerp(0.3, 0.5, 0.5) << std::endl;
+    
+    
 }
 
 //******************************************
@@ -313,4 +316,9 @@ float ParticleSystem::mapFloat(float value, float inputMin, float inputMax, floa
         outVal = outputMin;
     }
     return outVal;
+}
+
+float ParticleSystem::lerp(float start, float stop, float amt)
+{
+    return start + (fabs(stop-start) * amt);
 }

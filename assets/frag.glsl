@@ -14,7 +14,11 @@ out vec4 outColor;
 
 float lerp(float start, float stop, float amt)
 {
-    return start + abs(stop-start) * amt;
+    if (start < stop) {
+        return start + ((stop-start) * amt);
+    } else {
+        return stop + ((start-stop) * amt);
+    }
 }
 
 //******************************************
@@ -34,12 +38,12 @@ void main() {
     
     if (logoCol.a > 0.0f) {
         // lerp to Potion blue
-//        outColor.r = lerp(outCol.r, potionBlue.r, logoCol.a);
-//        outColor.g = lerp(outCol.g, potionBlue.g, logoCol.a);
-//        outColor.b = lerp(outCol.b, potionBlue.b, logoCol.a);
+        outColor.r = lerp(outCol.r, potionBlue.r, logoCol.a);
+        outColor.g = lerp(outCol.g, potionBlue.g, logoCol.a);
+        outColor.b = lerp(outCol.b, potionBlue.b, logoCol.a);
         
         
-        outColor.a *= 1.0 - logoCol.a;
+        //outColor.a *= 1.0 - logoCol.a;
     }
     
     outColor = vec4(outCol.r, outCol.g, outCol.b, outColor.a);

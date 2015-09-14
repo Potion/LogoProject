@@ -55,4 +55,5 @@ private:
     //test functions
     float getRandomFloat(ci::vec2 currentPos);
     float mapFloat(float value, float inputMin, float inputMax, float outputMin, float outputMax);
+    float lerp(float start, float stop, float amt);
 };
