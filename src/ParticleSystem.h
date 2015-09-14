@@ -41,6 +41,7 @@ private:
     GLint               mColAttrib;
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
+    GLint               mTexUniform;
     
     float *             mPosArrayPointer;
 

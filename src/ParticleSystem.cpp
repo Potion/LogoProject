@@ -106,6 +106,7 @@ void ParticleSystem::setup(float &posArray)
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
+    mTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
     
     std::cout << "Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
@@ -115,6 +116,7 @@ void ParticleSystem::setup(float &posArray)
 
     std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
+    std::cout << "mTexUniform: " << mTexUniform << std::endl;
     
     mPosArrayPointer = &posArray;
     
@@ -138,14 +140,7 @@ void ParticleSystem::update()
 //******************************************
 void ParticleSystem::updateMouse(ci::vec2 pos)
 {
-    //glLinkProgram(mShaderProgram);
-    //glUseProgram(mShaderProgram);
-    //mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mLastMousePos = pos;
-
-//    ci::vec2 normMousePos = normalizeMousePos(pos);
-//    float mousePosArray[] = {normMousePos.x, normMousePos.y};
-//    glUniform2fv(mMousePosUniform, 1, mousePosArray);
 }
 
 //******************************************
@@ -168,6 +163,9 @@ void ParticleSystem::draw()
     
     //  pass in the array of new positions
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
+    
+    //  texture uniform
+    glUniform1i(mTexUniform, 0);
     
     //std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
     //for (int i = 0; i < 20; i+=2) {
@@ -275,6 +273,8 @@ void ParticleSystem::loadTexture()
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mTexture = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
+    
+    std::cout << "mTexture id: " << mTexture->getId() << std::endl;
 }
 
 
@@ -333,24 +333,3 @@ float ParticleSystem::mapFloat(float value, float inputMin, float inputMax, floa
     }
     return outVal;
 }
-
-//ci::vec2 ParticleSystem::normalizeMousePos(ci::ivec2 pos)
-//{
-//    ci::vec2    normPos;
-//    float normX, normY;
-//    normX = (float)pos.x / (float)ci::app::getWindowWidth();
-//    normX *= 2.0f;
-//    normX -= 1.0f;
-//
-//    normY = (float)pos.y / (float)ci::app::getWindowHeight();
-//    normY *= 2.0f;
-//    normY -= 1.0f;
-//    normY *= -1.0f;
-//
-//    normX = glm::clamp(normX, -1.0f, 1.0f);
-//    normY = glm::clamp(normY, -1.0f, 1.0f);
-//    
-//    normPos.x = normX;
-//    normPos.y = normY;
-//    return normPos;
-//}
