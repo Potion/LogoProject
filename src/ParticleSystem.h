@@ -32,7 +32,6 @@ protected:
     
 private:
     GLuint              mVAO;
-    GLuint              mNewPositions;
     GLuint              mParticleBufferA, mParticleBufferB;
     GLuint              mShaderProgram;
 
@@ -41,14 +40,15 @@ private:
     GLint               mColAttrib;
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
-    GLint               mTexUniform;
+    GLint               mParticleTexUniform;
+    GLint               mPotionTexUniform;
     
     float *             mPosArrayPointer;
 
     std::string         loadShaderSource(std::string path);
     GLuint              createShader(GLenum type, const GLchar* src);
-    void                loadTexture();
-    ci::gl::TextureRef  mTexture;
+    void                loadTextures();
+    ci::gl::TextureRef  mParticleTex, mPotionTex;
     
     ci::vec2            mLastMousePos;
     
