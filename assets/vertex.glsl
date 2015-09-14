@@ -69,6 +69,7 @@ float mapFloat(float value, float inputMin, float inputMax, float outputMin, flo
 //  main
 //******************************************
 void main() {
+    
     vec2 gravity = vec2(0.0, -0.0005);
     float max = 0.05;
     float maxSquared = max * max;

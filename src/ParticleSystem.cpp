@@ -24,6 +24,8 @@ ParticleSystem::~ParticleSystem()
     glDeleteVertexArrays(1, &mVAO);
     glDeleteBuffers(1, &mParticleBufferA);
     glDeleteBuffers(1, &mParticleBufferB);
+    mPotionTex->unbind();
+    mParticleTex->unbind();
 }
 
 void ParticleSystem::setup(float &posArray)
@@ -34,7 +36,7 @@ void ParticleSystem::setup(float &posArray)
     
     mLastMousePos = ci::vec2(0.0f, 0.0f);
     
-    loadTexture();
+    loadTextures();
     
     //  array of values
     GLfloat positionData[logo::NUM_PARTICLES * 7]; // two slots for position, two for velocity, three for color
@@ -100,13 +102,21 @@ void ParticleSystem::setup(float &posArray)
     glLinkProgram(mShaderProgram);
     glUseProgram(mShaderProgram);
     
+//    mParticleTex->bind(0);
+//    mPotionTex->bind(1);
+//    //  texture uniform
+//    glUniform1i(mParticleTexUniform, 0);
+//    glUniform1i(mPotionTexUniform, 1);
+
+    
     mPosAttrib = glGetAttribLocation(mShaderProgram, "inPos");
     mVelAttrib = glGetAttribLocation(mShaderProgram, "inVel");
     mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
-    mTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
+    mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
+    mPotionTexUniform = glGetUniformLocation(mShaderProgram, "PotionTex");
     
     std::cout << "Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
@@ -116,7 +126,9 @@ void ParticleSystem::setup(float &posArray)
 
     std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
-    std::cout << "mTexUniform: " << mTexUniform << std::endl;
+    std::cout << "mParticleTexUniform: " << mParticleTexUniform << std::endl;
+    std::cout << "mPotionTexUniform: " << mPotionTexUniform << std::endl;
+    
     
     mPosArrayPointer = &posArray;
     
@@ -164,8 +176,6 @@ void ParticleSystem::draw()
     //  pass in the array of new positions
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     
-    //  texture uniform
-    glUniform1i(mTexUniform, 0);
     
     //std::cout << "ParticleSystem::draw: first ten values of array: " << std::endl;
     //for (int i = 0; i < 20; i+=2) {
@@ -235,7 +245,10 @@ void ParticleSystem::draw()
     glDisable(GL_RASTERIZER_DISCARD);
     
     //  Cinder openGL calls to render textures as points
-    ci::gl::ScopedTextureBind texScope( mTexture );
+//    glUniform1i(mParticleTexUniform, 0);
+    ci::gl::ScopedTextureBind texScope( mParticleTex , 0);
+    ci::gl::ScopedTextureBind texScope2(mPotionTex, 1);
+    glUniform1i(mPotionTexUniform, 1);
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
     ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -268,13 +281,19 @@ std::string ParticleSystem::loadShaderSource(std::string path)
 //******************************************
 //  load texture
 //******************************************
-void ParticleSystem::loadTexture()
+void ParticleSystem::loadTextures()
 {
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
-    mTexture = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
+    mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
     
-    std::cout << "mTexture id: " << mTexture->getId() << std::endl;
+    ci::gl::Texture::Format textureFormat2;
+    textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
+    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
+    
+    std::cout << "mParticleTex id: " << mParticleTex->getId() << std::endl;
+    std::cout << "mParticleTex id: " << mPotionTex->getId() << std::endl;
+    
 }
 
 
