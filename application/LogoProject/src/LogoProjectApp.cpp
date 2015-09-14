@@ -98,7 +98,7 @@ void LogoProjectApp::setup()
     mPrevMat = cv::Mat(480, 640, CV_8U);
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
-    mThreshold = 20;
+    mThreshold = 70;
 }
 
 void LogoProjectApp::mouseDown( MouseEvent event )
