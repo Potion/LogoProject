@@ -60,7 +60,8 @@ void ParticleSystem::setup(float &posArray)
         positionData[(i*7) + 6] = ci::Rand::randFloat();  // col.b
     }
     
-    std::cout << "Sizeof positionData: " << sizeof(positionData) << std::endl;
+    std::cout << "ParticleSystem::setup" << std::endl;
+    std::cout << "    Sizeof positionData: " << sizeof(positionData) << std::endl;
     
     //  create two buffers to ping-pong back and forth with position data
     glGenBuffers(1, &mParticleBufferA);
@@ -86,9 +87,10 @@ void ParticleSystem::setup(float &posArray)
     GLuint fragmentShader = createShader(GL_FRAGMENT_SHADER, fragShaderSrc);
     mShaderProgram = glCreateProgram();
     
-    std::cout << "vertexShader: " << vertexShader << std::endl;
-    std::cout << "fragmentShader: " << fragmentShader << std::endl;
-    std::cout << "mShaderProgram: " << mShaderProgram << std::endl;
+    std::cout << "ParticleSystem::setup" << std::endl;
+    std::cout << "    vertexShader: " << vertexShader << std::endl;
+    std::cout << "    fragmentShader: " << fragmentShader << std::endl;
+    std::cout << "    mShaderProgram: " << mShaderProgram << std::endl;
     glAttachShader(mShaderProgram, vertexShader);
     glAttachShader(mShaderProgram, fragmentShader);
 
@@ -111,16 +113,16 @@ void ParticleSystem::setup(float &posArray)
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
     mPotionTexUniform = glGetUniformLocation(mShaderProgram, "PotionTex");
     
-    std::cout << "Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
+    std::cout << "    Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
-    std::cout << "mPosAttrib: " << mPosAttrib << std::endl;
-    std::cout << "mVelAttrib: " << mVelAttrib << std::endl;
-    std::cout << "mColAttrib: " << mColAttrib << std::endl;
+    std::cout << "    mPosAttrib: " << mPosAttrib << std::endl;
+    std::cout << "    mVelAttrib: " << mVelAttrib << std::endl;
+    std::cout << "    mColAttrib: " << mColAttrib << std::endl;
 
-    std::cout << "mMousePosUniform:" << mMousePosUniform << std::endl;
-    std::cout << "mNewPosUniform: " << mNewPosUniform << std::endl;
-    std::cout << "mParticleTexUniform: " << mParticleTexUniform << std::endl;
-    std::cout << "mPotionTexUniform: " << mPotionTexUniform << std::endl;
+    std::cout << "    mMousePosUniform:" << mMousePosUniform << std::endl;
+    std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
+    std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
+    std::cout << "    mPotionTexUniform: " << mPotionTexUniform << std::endl;
     
     
     mPosArrayPointer = &posArray;
@@ -129,9 +131,6 @@ void ParticleSystem::setup(float &posArray)
     //std::cout << "RandFloat on 1.5, 1.7)" << getRandomFloat(ci::vec2(1.5, 1.7)) << std::endl;
     //std::cout << "RandFloat on 1.9, 1.5)" << getRandomFloat(ci::vec2(1.9, 1.5)) << std::endl;
     //std::cout << "RandFloat on 0.9, 0.3)" << getRandomFloat(ci::vec2(0.9, 0.3)) << std::endl;
-    
-    std::cout << "Lerp 0.3 to 0.5 by 0.5: " << lerp(0.3, 0.5, 0.5) << std::endl;
-    
     
 }
 
@@ -256,8 +255,9 @@ void ParticleSystem::loadTextures()
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
     
-    std::cout << "mParticleTex id: " << mParticleTex->getId() << std::endl;
-    std::cout << "mParticleTex id: " << mPotionTex->getId() << std::endl;
+    std::cout << "ParticleSystem::loadTextures" << std::endl;
+    std::cout << "    mParticleTex id: " << mParticleTex->getId() << std::endl;
+    std::cout << "    mPotionTex id: " << mPotionTex->getId() << std::endl;
     
 }
 
@@ -276,7 +276,8 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     char buffer[512];
-    std::cout << "Shader status: (0 bad, 1 good): " << status << std::endl;
+    std::cout << "ParticleSystem::createShader: " << std::endl;
+    std::cout << "    Shader status: (0 bad, 1 good): " << status << std::endl;
     if (status == 0) {
         glGetShaderInfoLog(shader, 512, NULL, buffer);
         std::cout << "Shader compile log: " << buffer << std::endl;

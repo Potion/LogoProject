@@ -173,7 +173,6 @@ void LogoProjectApp::update()
     Surface8u tempSurface = Surface8u(imageRef);
     
     if (!mTexture) {
-        std::cout << "update::Creating new texture" << std::endl;
         mTexture = ci::gl::Texture::create(imageRef);
     } else {
         mTexture->update(tempSurface);

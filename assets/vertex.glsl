@@ -1,6 +1,7 @@
 #version 150 core
 
 const int numNewPositions = 100;
+const float MATH_PI = 3.1415926535897932384626433832795;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
@@ -13,13 +14,16 @@ out vec2 outPos;
 out vec2 outVel;
 out vec3 outCol;
 
+out vec3 dirCol;
+
 
 //******************************************
 //  generate a pseudo random direction based on particle's current position
 //  http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
 //  generates number between 0.0 and 1.0
 //******************************************
-float getRandomFloat(vec2 currentPos) {
+float getRandomFloat(vec2 currentPos)
+{
     //return fract(sin(dot(currentPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
     float a = 12.9898;
     float b = 78.233;
@@ -35,7 +39,7 @@ float getRandomFloat(vec2 currentPos) {
 vec2 getDir(float value)
 {
     vec2 vel;
-    value *= (3.1415926535897932384626433832795 * 173.5f);
+    value *= (MATH_PI * 173.5f);
     vel.x = cos(value);
     vel.y = sin(value);
     return vel;
@@ -62,6 +66,42 @@ float mapFloat(float value, float inputMin, float inputMax, float outputMin, flo
     return outVal;
 }
 
+//******************************************
+//  convert RGB to HSV
+//******************************************
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+    
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+//******************************************
+//  convert HSV to RGB
+//******************************************
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+//******************************************
+//  generate HSV color based on direction
+//******************************************
+vec3 getDirBasedColor(vec2 dir)
+{
+    vec2 normalizedVel = normalize(dir);
+    //vec2 vertical = vec2(0.0, 1.0);
+    float angle = atan(normalizedVel.y, normalizedVel.x);
+    angle = mapFloat(angle, -MATH_PI, MATH_PI, 0.0f, 1.0f);
+    vec3 color = hsv2rgb(vec3(angle, 1.0f, 1.0f));
+    return color;
+}
 
 //******************************************
 //  main
@@ -113,6 +153,8 @@ void main() {
         //outPos = mousePos;
         //outPos = vec2(0.33, -1.73076);
     }
+    
+    dirCol = getDirBasedColor(outVel);
     
     outCol = inCol;
     gl_PointSize = 15.0f;
