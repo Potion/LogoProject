@@ -5,6 +5,7 @@
 #include "cinder/Capture.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
+#include "cinder/params/Params.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -35,6 +36,7 @@ class LogoProjectApp : public App {
     void                    restartCamera();
     CaptureRef              mCapture;
     gl::TextureRef          mTexture;
+    gl::TextureRef          mBlackBox;
     
     //  openCV
     cv::Mat             convertToOCVMat(ci::Surface &surface);
@@ -58,6 +60,12 @@ class LogoProjectApp : public App {
     
     ci::vec2            normalizePosition(ci::vec2 &pos, int width, int height);
     
+    //  GUI information
+    params::InterfaceGlRef  mParams;
+    void                setUpParams();
+    float               mBGOpacity;
+    float               mBasePixelOpacity;
+    float               mPixelDecaySpeed;
 };
 
 void LogoProjectApp::setup()
@@ -75,8 +83,12 @@ void LogoProjectApp::setup()
 
     //  print out OpenGL version
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-
+    
+    ci::gl::enableAlphaBlending();
+    
     mParticles = ParticleSystem::create(*mNewPositions);
+    
+    mBlackBox = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("blackBox.png")));
     
     //  camera
     if (!findDepthSense()) {
@@ -96,9 +108,15 @@ void LogoProjectApp::setup()
     }
     
     mPrevMat = cv::Mat(480, 640, CV_8U);
+
+    //  set defaults and set up paramater GUI
+    mBGOpacity = 0.3;
+    setUpParams();
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
     mThreshold = 70;
+    mBasePixelOpacity = 1.0;
+    mPixelDecaySpeed = 4.0f;
 }
 
 //******************************************
@@ -194,17 +212,38 @@ void LogoProjectApp::update()
 //******************************************
 void LogoProjectApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) );
+    //gl::clear( Color( 0, 0, 0 ) );
 
     //  debugging only
-    if (mTexture) {
-        gl::draw(mTexture);
+    ci::gl::color(ColorA(0.0, 0.0, 0.0, mBGOpacity));
+    //if (mTexture) {
+    //    //gl::draw(mTexture);
+    //}
+    if (mBlackBox) {
+        gl::draw(mBlackBox);
     }
-
+    
+    //**************Lots of stuff that didn't work*****************
+    //ci::Rectf rect(0.0, 0.0, ci::app::getWindowWidth(), ci::app::getWindowHeight());
+    //ci::gl::drawSolidRect(rect);
+    //
+    //ci::gl::clear(ci::ColorA(0.0, 0.0, 0.0, 0.001));
+    //ci::gl::color(0.0, 0.0, 0.0, 0.0005);
+    //
+    //ci::gl::enableAlphaBlending();
+    //ci::gl::clear(ci::ColorA(0.0, 0.0, 0.0, 0.001));
+    //gl::drawSolidRect(ci::Rectf(0, 1, 1, 0), vec2(0, 1), vec2(1, 0));
+    //
+    //auto ctx = ci::gl::context();
+    //ctx->getDefaultVao()->bind();
+    //ctx->setDefaultShaderVars();
+    //**************************************************************
+    
     //  Draw the FPS
     ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
     
     mParticles->draw();
+    mParams->draw();
 }
 
 //******************************************
@@ -332,10 +371,18 @@ void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
             mNewPositions[i+1] = vector[indices[i]].y;
         }
     }
-    
-    //for (int i = 0; i < logo::NUM_NEW_POSITIONS; i++) {
-    //    std::cout << "    " << i << ": x: " << mNewPositions[i*2] << ", y: " << mNewPositions[i*2 + 1] << std::endl;
-    //}
+}
+
+//******************************************
+//  set up GUI parameters
+//******************************************
+void LogoProjectApp::setUpParams()
+{
+    mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(200, 150)));
+    mParams->addParam("Motion threshold", &mThreshold).min(0).max(100).step(5);
+    mParams->addParam("BG Opacity", &mBGOpacity).min(0.01).max(1.0).step(0.01);
+    mParams->addParam("Pixel Opacity", &mBasePixelOpacity).min(0.0).max(1.0).step(0.1);
+    mParams->addParam("Pixel Decay", &mPixelDecaySpeed).min(0.0f).max(4.0f).step(0.05);
 }
 
 //******************************************
