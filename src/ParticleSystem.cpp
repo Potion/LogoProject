@@ -24,8 +24,6 @@ ParticleSystem::~ParticleSystem()
     glDeleteVertexArrays(1, &mVAO);
     glDeleteBuffers(1, &mParticleBufferA);
     glDeleteBuffers(1, &mParticleBufferB);
-    mPotionTex->unbind();
-    mParticleTex->unbind();
 }
 
 void ParticleSystem::setup(float &posArray)
@@ -54,7 +52,10 @@ void ParticleSystem::setup(float &posArray)
         particleData[(i*8) + 2] = cos(randNum3) * 0.03;             // vel.x
         particleData[(i*8) + 3] = sin(randNum3) * 0.03;             // vel.y
         
-        particleData[(i*8) + 4] = ci::Rand::randFloat();            // col.r
+        particleData[(i*8) + 4] = ci::Rand::randFloat(-0.1, 0.1);            // col.r
+        if (particleData[(i*8) + 4] < 0.0) {
+            particleData[(i*8) + 4] += 1.0;
+        }
         particleData[(i*8) + 5] = ci::Rand::randFloat();            // col.g
         particleData[(i*8) + 6] = ci::Rand::randFloat();            // col.b
         
@@ -112,8 +113,9 @@ void ParticleSystem::setup(float &posArray)
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
+    
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
-    mPotionTexUniform = glGetUniformLocation(mShaderProgram, "PotionTex");
+    mBackgroundTexUniform = glGetUniformLocation(mShaderProgram, "BackgroundTex");
     
     std::cout << "    Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
@@ -125,7 +127,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
-    std::cout << "    mPotionTexUniform: " << mPotionTexUniform << std::endl;
+    std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
     
     mPosArrayPointer = &posArray;
@@ -210,8 +212,8 @@ void ParticleSystem::draw()
     //  Cinder openGL calls to render textures as points
     // glUniform1i(mParticleTexUniform, 0);
     ci::gl::ScopedTextureBind texScope( mParticleTex , 0 );
-    ci::gl::ScopedTextureBind texScope2( mPotionTex, 1 );
-    glUniform1i(mPotionTexUniform, 1);
+    ci::gl::ScopedTextureBind texScope2( mBackgroundTex, 1 );
+    glUniform1i(mBackgroundTexUniform, 1);
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
     ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -255,9 +257,16 @@ void ParticleSystem::loadTextures()
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
     
-    ci::gl::Texture::Format textureFormat2;
-    textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
+//    ci::gl::Texture::Format textureFormat2;
+//    textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
+    
+//    ci::gl::Texture::Format textureFormat3;
+//    textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
+    mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
+    
+    mBackgroundTex = mPotionTex;
+    
     
     std::cout << "ParticleSystem::loadTextures" << std::endl;
     std::cout << "    mParticleTex id: " << mParticleTex->getId() << std::endl;
@@ -288,6 +297,12 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
     }
     
     return shader;
+}
+
+void ParticleSystem::changeBackground()
+{
+    mBackgroundTex = mPhillipTex;
+    
 }
 
 //******************************************

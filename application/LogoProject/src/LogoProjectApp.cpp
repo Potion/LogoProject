@@ -101,6 +101,9 @@ void LogoProjectApp::setup()
     mThreshold = 70;
 }
 
+//******************************************
+//  input
+//******************************************
 void LogoProjectApp::mouseDown( MouseEvent event )
 {
 }
@@ -116,8 +119,15 @@ void LogoProjectApp::mouseMove( MouseEvent event )
 void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
 {
     std::cout << "LogoProjectApp::keyDown:" << std::endl;
+    if (event.getChar() == ' ') {
+        std::cout << "    Spacebar" << std::endl;
+        mParticles->changeBackground();
+    }
 }
 
+//******************************************
+//  update
+//******************************************
 void LogoProjectApp::update()
 {
     

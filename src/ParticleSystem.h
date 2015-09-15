@@ -26,6 +26,7 @@ public:
     void update();
     void updateMouse(ci::vec2 pos);
     void draw();
+    void changeBackground();
 
 protected:
     ParticleSystem();
@@ -42,14 +43,16 @@ private:
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
     GLint               mParticleTexUniform;
-    GLint               mPotionTexUniform;
+    GLint               mBackgroundTexUniform;
     
     float *             mPosArrayPointer;
 
     std::string         loadShaderSource(std::string path);
     GLuint              createShader(GLenum type, const GLchar* src);
+    
     void                loadTextures();
-    ci::gl::TextureRef  mParticleTex, mPotionTex;
+    ci::gl::TextureRef  mParticleTex, mPotionTex, mPhillipTex;
+    ci::gl::TextureRef  mBackgroundTex;
     
     ci::vec2            mLastMousePos;
     

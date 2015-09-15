@@ -1,7 +1,7 @@
 #version 150 core
 
 uniform sampler2D ParticleTex;
-uniform sampler2D PotionTex;
+uniform sampler2D BackgroundTex;
 
 in vec2 outPos;
 in vec3 outCol;
@@ -33,7 +33,7 @@ void main() {
     texCoord.x = (outPos.x  + 1.0f) / 2.0f;
     texCoord.y = (outPos.y + 1.0f) / 2.0f;
 
-    vec4 logoCol = texture(PotionTex, texCoord);
+    vec4 logoCol = texture(BackgroundTex, texCoord);
     
     outColor = texture(ParticleTex, gl_PointCoord);
     outColor = vec4(dirCol, outColor.a);
