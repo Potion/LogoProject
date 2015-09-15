@@ -214,8 +214,8 @@ void ParticleSystem::draw()
     glUniform1i(mPotionTexUniform, 1);
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
-//    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA );
-    ci::gl::ScopedBlendAdditive additive;
+    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+//    ci::gl::ScopedBlendAdditive additive;
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
