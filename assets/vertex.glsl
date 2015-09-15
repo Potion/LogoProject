@@ -10,9 +10,13 @@ in vec2 inPos;
 in vec2 inVel;
 in vec3 inCol;
 
+in float inSize;
+
 out vec2 outPos;
 out vec2 outVel;
 out vec3 outCol;
+
+out float outSize;
 
 out vec3 dirCol;
 
@@ -157,6 +161,7 @@ void main() {
     dirCol = getDirBasedColor(outVel);
     
     outCol = inCol;
-    gl_PointSize = 15.0f;
+    outSize = inSize;
+    gl_PointSize = outSize;
     gl_Position = vec4(outPos, 0.0, 1.0);
 }

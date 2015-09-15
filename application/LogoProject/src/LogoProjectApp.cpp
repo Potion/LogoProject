@@ -227,7 +227,7 @@ ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
 //******************************************
 void LogoProjectApp::restartCamera()
 {
-    std::cout << "Frame # " << ci::app::getElapsedFrames() << ": LogoProjectApp::restartCamera" << std::endl;
+    std::cout << "LogoProjectApp::restartCamera: Frame # " << ci::app::getElapsedFrames() << std::endl;
     mCapture->stop();
     mCapture->start();
     mLastGoodFrame = ci::app::getElapsedFrames();

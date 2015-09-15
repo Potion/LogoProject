@@ -38,6 +38,7 @@ private:
     GLint               mPosAttrib;
     GLint               mVelAttrib;
     GLint               mColAttrib;
+    GLint               mSizeAttrib;
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
     GLint               mParticleTexUniform;
