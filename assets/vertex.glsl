@@ -158,7 +158,9 @@ void main() {
         //outPos = vec2(0.33, -1.73076);
     }
     
-    dirCol = getDirBasedColor(outVel);
+    //dirCol = getDirBasedColor(outVel);
+    dirCol = hsv2rgb(vec3(inCol.r, 0.9, 0.9));
+    
     
     outCol = inCol;
     outSize = inSize;
