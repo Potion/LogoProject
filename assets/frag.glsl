@@ -42,9 +42,8 @@ void main() {
         outColor.g = lerp(outCol.g, potionBlue.g, logoCol.a);
         outColor.b = lerp(outCol.b, potionBlue.b, logoCol.a);
         
-        
         //outColor.a *= 1.0 - logoCol.a;
+    } else {
+        outColor = vec4(outCol.r, outCol.g, outCol.b, outColor.a);
     }
-    
-    outColor = vec4(outCol.r, outCol.g, outCol.b, outColor.a);
 }
