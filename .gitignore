@@ -18,6 +18,8 @@ include/opencv2/*
 
 !.gitkeep
 
+/documentation/screenCaps/*
+
 DerivedData
 
 ./Cinder/blocks/

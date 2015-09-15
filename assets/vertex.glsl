@@ -35,9 +35,7 @@ float getRandomFloat(vec2 currentPos) {
 vec2 getDir(float value)
 {
     vec2 vel;
-    value *= (3.1415926535897932384626433832795 * 2.0f);
-    //vel.x = cos(randFloat) * 0.13;
-    //vel.y = sin(randFloat) * 0.13;
+    value *= (3.1415926535897932384626433832795 * 173.5f);
     vel.x = cos(value);
     vel.y = sin(value);
     return vel;
@@ -101,7 +99,7 @@ void main() {
         float newVelSeed = getRandomFloat(randomSeed);
 
         float newSpeed = getRandomFloat(randomSeed2);
-        newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.06, 0.15); // make min output number smaller; why does that happen?
+        newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.055, 0.15); // make min output number smaller; why does that happen?
         
         outVel = getDir(newVelSeed);
         outVel *= newSpeed;

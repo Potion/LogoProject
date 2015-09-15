@@ -16,7 +16,8 @@ float lerp(float start, float stop, float amt)
 {
     if (start < stop) {
         return start + ((stop-start) * amt);
-    } else {
+    }
+    else {
         return stop + ((start-stop) * amt);
     }
 }
