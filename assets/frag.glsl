@@ -7,6 +7,7 @@ in vec2 vsPos;
 in vec3 vsCol;
 
 in vec3 vsDirCol;
+in float vsDecay;
 
 out vec4 fsColor;
 
@@ -36,15 +37,15 @@ void main() {
     vec4 logoCol = texture(BackgroundTex, texCoord);
     
     fsColor = texture(ParticleTex, gl_PointCoord);
-    fsColor = vec4(vsDirCol, fsColor.a);
+    fsColor = vec4(vsDirCol, fsColor.a * vsDecay);
     
     vec3 potionBlue = vec3(72.0f/255.0f, 146.0f/255.0f, 207.0f/255.0f);
     
     if (logoCol.a > 0.0f) {
         // lerp to Potion blue
-        fsColor.r = lerp(fsColor.r, potionBlue.r, logoCol.a);
-        fsColor.g = lerp(fsColor.g, potionBlue.g, logoCol.a);
-        fsColor.b = lerp(fsColor.b, potionBlue.b, logoCol.a);
+        fsColor.r = lerp(fsColor.r, potionBlue.r, logoCol.a * vsDecay);
+        fsColor.g = lerp(fsColor.g, potionBlue.g, logoCol.a * vsDecay);
+        fsColor.b = lerp(fsColor.b, potionBlue.b, logoCol.a * vsDecay);
         
         //outColor.a *= 1.0 - logoCol.a;
     }

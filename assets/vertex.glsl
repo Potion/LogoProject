@@ -25,6 +25,7 @@ out float vsSize;
 out float vsBornTime;
 
 out vec3 vsDirCol;
+out float vsDecay;
 
 
 //******************************************
@@ -175,6 +176,8 @@ void main() {
     
     //dirCol = getDirBasedColor(outVel);
     //vsDirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
+    
+    vsDecay = 1.0 - (lifetime / lifespan);
     vsDirCol = hsv2rgb(vec3(hue, 1.0, 1.0));
     
     vsCol = inCol;
