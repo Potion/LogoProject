@@ -3,12 +3,12 @@
 uniform sampler2D ParticleTex;
 uniform sampler2D BackgroundTex;
 
-in vec2 outPos;
-in vec3 outCol;
+in vec2 vsPos;
+in vec3 vsCol;
 
-in vec3 dirCol;
+in vec3 vsDirCol;
 
-out vec4 outColor;
+out vec4 fsColor;
 
 //******************************************
 //  lerp formula
@@ -30,21 +30,21 @@ float lerp(float start, float stop, float amt)
 
 void main() {
     vec2 texCoord;
-    texCoord.x = (outPos.x  + 1.0f) / 2.0f;
-    texCoord.y = (outPos.y + 1.0f) / 2.0f;
+    texCoord.x = (vsPos.x  + 1.0f) / 2.0f;
+    texCoord.y = (vsPos.y + 1.0f) / 2.0f;
 
     vec4 logoCol = texture(BackgroundTex, texCoord);
     
-    outColor = texture(ParticleTex, gl_PointCoord);
-    outColor = vec4(dirCol, outColor.a);
+    fsColor = texture(ParticleTex, gl_PointCoord);
+    fsColor = vec4(vsDirCol, fsColor.a);
     
     vec3 potionBlue = vec3(72.0f/255.0f, 146.0f/255.0f, 207.0f/255.0f);
     
     if (logoCol.a > 0.0f) {
         // lerp to Potion blue
-        outColor.r = lerp(outColor.r, potionBlue.r, logoCol.a);
-        outColor.g = lerp(outColor.g, potionBlue.g, logoCol.a);
-        outColor.b = lerp(outColor.b, potionBlue.b, logoCol.a);
+        fsColor.r = lerp(fsColor.r, potionBlue.r, logoCol.a);
+        fsColor.g = lerp(fsColor.g, potionBlue.g, logoCol.a);
+        fsColor.b = lerp(fsColor.b, potionBlue.b, logoCol.a);
         
         //outColor.a *= 1.0 - logoCol.a;
     }

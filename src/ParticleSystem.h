@@ -43,6 +43,7 @@ private:
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
     GLint               mDeltaTimeUniform;
+    GLint               mTimeUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;

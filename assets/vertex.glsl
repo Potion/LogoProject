@@ -6,6 +6,7 @@ const float MATH_PI = 3.1415926535897932384626433832795;
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
 uniform float deltaTime; // in seconds
+uniform float time;
 
 in vec2 inPos;
 in vec2 inVel;
@@ -13,13 +14,13 @@ in vec3 inCol;
 
 in float inSize;
 
-out vec2 outPos;
-out vec2 outVel;
-out vec3 outCol;
+out vec2 vsPos;
+out vec2 vsVel;
+out vec3 vsCol;
 
-out float outSize;
+out float vsSize;
 
-out vec3 dirCol;
+out vec3 vsDirCol;
 
 
 //******************************************
@@ -119,23 +120,23 @@ void main() {
     
     //int number = numNewPositions;
     
-    outPos = inPos;
-    outVel = inVel;
-    outVel += gravity;
+    vsPos = inPos;
+    vsVel = inVel;
+    vsVel += gravity;
     
     //outCol = vec3(0.0, 1.0, 0.0);
     
     // limit speed
-    float speedSquared = dot(outVel, outVel);
+    float speedSquared = dot(vsVel, vsVel);
     if (speedSquared > maxSquared) {
-        vec2 norm = normalize(outVel);
-        outVel *= max;
+        vec2 norm = normalize(vsVel);
+        vsVel *= max;
     }
     
-    outPos += outVel * deltaTime * 59.0f;
+    vsPos += vsVel * deltaTime * 59.0f;
     
     //  keep in frame
-    if (outPos.y < -1.0) {
+    if (vsPos.y < -1.0) {
         //  reset velocity
         //  use last position to generate random number for velocity direction
         vec2 randomSeed = inPos + vec2(inCol.r, inCol.g);
@@ -146,25 +147,25 @@ void main() {
         float newSpeed = getRandomFloat(randomSeed2);
         newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.055, 0.15); // make min output number smaller; why does that happen?
         
-        outVel = getDir(newVelSeed);
-        outVel *= newSpeed;
+        vsVel = getDir(newVelSeed);
+        vsVel *= newSpeed;
 
         //  reset position
         //  pick random new position within array of white pixels
         float topLimit = float(numNewPositions) - 0.1;
         float newNum = mapFloat(newVelSeed, 0.0, 1.0, 0.0, topLimit);
         int newIndex = int(newNum);
-        outPos = newPositions[newIndex];
-        //outPos = mousePos;
-        //outPos = vec2(0.33, -1.73076);
+        vsPos = newPositions[newIndex];
+        //vsPos = mousePos;
+        //vsPos = vec2(0.33, -1.73076);
     }
     
     //dirCol = getDirBasedColor(outVel);
-    dirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
+    vsDirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
     
     
-    outCol = inCol;
-    outSize = inSize;
-    gl_PointSize = outSize;
-    gl_Position = vec4(outPos, 0.0, 1.0);
+    vsCol = inCol;
+    vsSize = inSize;
+    gl_PointSize = vsSize;
+    gl_Position = vec4(vsPos, 0.0, 1.0);
 }

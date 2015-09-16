@@ -97,10 +97,10 @@ void ParticleSystem::setup(float &posArray)
     glAttachShader(mShaderProgram, fragmentShader);
 
     // before linking program, specify which output attributes we want to capture into a buffer
-    const GLchar * feedbackVaryings[4] = {"outPos", "outVel", "outCol", "outSize"};
+    const GLchar * feedbackVaryings[4] = {"vsPos", "vsVel", "vsCol", "vsSize"};
     glTransformFeedbackVaryings(mShaderProgram, 4, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
     
-    glBindFragDataLocation(mShaderProgram, 0, "outColor");
+    glBindFragDataLocation(mShaderProgram, 0, "fsColor");
 
     // link and activate the program
     glLinkProgram(mShaderProgram);
@@ -114,6 +114,7 @@ void ParticleSystem::setup(float &posArray)
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
     mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "deltaTime");
+    mTimeUniform = glGetUniformLocation(mShaderProgram, "time");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
@@ -129,6 +130,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
     std::cout << "    mDeltaTimeUniform: " << mDeltaTimeUniform << std::endl;
+    std::cout << "    mTimeUniform: " << mTimeUniform << std::endl;
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
@@ -167,14 +169,14 @@ void ParticleSystem::draw()
         testArray[i] = mPosArrayPointer[i];
     }
 
-    //  pass mouse position
+    //  pass in uniforms
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
+    float time = ci::app::getElapsedSeconds();
     
-    //  pass in the array of new positions and deltaTime
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);
-    
+    glUniform1fv(mTimeUniform, 1, &time);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
