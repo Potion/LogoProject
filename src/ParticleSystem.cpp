@@ -37,7 +37,7 @@ void ParticleSystem::setup(float &posArray)
     loadTextures();
     
     //  array of values
-    GLfloat particleData[logo::NUM_PARTICLES * 8]; // two slots for position, two for velocity, three for color, one for size
+    GLfloat particleData[logo::NUM_PARTICLES * 9]; // two slots for position, two for velocity, three for color, one for size
     
     for (int i = 0; i < logo::NUM_PARTICLES; i++) {
         //  position is completely random
@@ -46,20 +46,21 @@ void ParticleSystem::setup(float &posArray)
         //  velocity is normalized vector
         float randNum3 = ci::Rand::randFloat(0.0f, M_PI * 2.0f);
         
-        particleData[(i*8) + 0] = randNum;                          // pos.x
-        particleData[(i*8) + 1] = randNum2;                         // pos.y
+        particleData[(i*9) + 0] = randNum;                          // pos.x
+        particleData[(i*9) + 1] = randNum2;                         // pos.y
         
-        particleData[(i*8) + 2] = cos(randNum3) * 0.03;             // vel.x
-        particleData[(i*8) + 3] = sin(randNum3) * 0.03;             // vel.y
+        particleData[(i*9) + 2] = cos(randNum3) * 0.03;             // vel.x
+        particleData[(i*9) + 3] = sin(randNum3) * 0.03;             // vel.y
         
-        particleData[(i*8) + 4] = ci::Rand::randFloat();            // col.r
+        particleData[(i*9) + 4] = ci::Rand::randFloat();            // col.r
 //        if (particleData[(i*8) + 4] < 0.0) {
 //            particleData[(i*8) + 4] += 1.0;
 //        }
-        particleData[(i*8) + 5] = ci::Rand::randFloat();            // col.g
-        particleData[(i*8) + 6] = ci::Rand::randFloat();            // col.b
+        particleData[(i*9) + 5] = ci::Rand::randFloat();            // col.g
+        particleData[(i*9) + 6] = ci::Rand::randFloat();            // col.b
         
-        particleData[(i*8) + 7] = ci::Rand::randFloat(3.0f, 9.0f); // baseSize
+        particleData[(i*9) + 7] = ci::Rand::randFloat(3.0f, 9.0f);  // baseSize
+        particleData[(i*9) + 8] = ci::app::getElapsedSeconds();     // born time
     }
     
     std::cout << "ParticleSystem::setup" << std::endl;
@@ -97,8 +98,8 @@ void ParticleSystem::setup(float &posArray)
     glAttachShader(mShaderProgram, fragmentShader);
 
     // before linking program, specify which output attributes we want to capture into a buffer
-    const GLchar * feedbackVaryings[4] = {"vsPos", "vsVel", "vsCol", "vsSize"};
-    glTransformFeedbackVaryings(mShaderProgram, 4, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+    const GLchar * feedbackVaryings[5] = {"vsPos", "vsVel", "vsCol", "vsSize", "vsBornTime"};
+    glTransformFeedbackVaryings(mShaderProgram, 5, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
     
     glBindFragDataLocation(mShaderProgram, 0, "fsColor");
 
@@ -110,6 +111,7 @@ void ParticleSystem::setup(float &posArray)
     mVelAttrib = glGetAttribLocation(mShaderProgram, "inVel");
     mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
     mSizeAttrib = glGetAttribLocation(mShaderProgram, "inSize");
+    mBornTimeAttrib = glGetAttribLocation(mShaderProgram, "inBornTime");
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
@@ -126,6 +128,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mVelAttrib: " << mVelAttrib << std::endl;
     std::cout << "    mColAttrib: " << mColAttrib << std::endl;
     std::cout << "    mSizeAttrib: " << mSizeAttrib << std::endl;
+    std::cout << "    mBornTimeAttrib: " << mBornTimeAttrib << std::endl;
 
     std::cout << "    mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
@@ -133,6 +136,9 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mTimeUniform: " << mTimeUniform << std::endl;
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
+    
+    std::cout << "\n" << std::endl;
+    std::cout << "Max number of transform varyings: " << GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS << std::endl;
     
     
     mPosArrayPointer = &posArray;
@@ -184,16 +190,19 @@ void ParticleSystem::draw()
     //  specify the source buffer
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glEnableVertexAttribArray(mPosAttrib);
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
     
     glEnableVertexAttribArray(mVelAttrib);
-    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(2 * sizeof(float)));
     
     glEnableVertexAttribArray(mColAttrib);
-    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(4 * sizeof(float)));
     
     glEnableVertexAttribArray(mSizeAttrib);
-    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+    
+    glEnableVertexAttribArray(mBornTimeAttrib);
+    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
     
     
     //  specify target buffer
@@ -209,6 +218,7 @@ void ParticleSystem::draw()
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
     glDisableVertexAttribArray(mSizeAttrib);
+    glDisableVertexAttribArray(mBornTimeAttrib);
     
     glFlush();
 
@@ -229,20 +239,28 @@ void ParticleSystem::draw()
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
+    
     glEnableVertexAttribArray(mPosAttrib);
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+    
     glEnableVertexAttribArray(mVelAttrib);
-    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(2 * sizeof(float)));
+    
     glEnableVertexAttribArray(mColAttrib);
-    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(4 * sizeof(float)));
+    
     glEnableVertexAttribArray(mSizeAttrib);
-    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+    
+    glEnableVertexAttribArray(mBornTimeAttrib);
+    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
     
     glDrawArrays(GL_POINTS, 0, logo::NUM_PARTICLES);
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
     glDisableVertexAttribArray(mSizeAttrib);
+    glDisableVertexAttribArray(mBornTimeAttrib);
 }
 
 //******************************************

@@ -2,6 +2,7 @@
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
+const float lifespan = 4.0f;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
@@ -13,12 +14,14 @@ in vec2 inVel;
 in vec3 inCol;
 
 in float inSize;
+in float inBornTime;
 
 out vec2 vsPos;
 out vec2 vsVel;
 out vec3 vsCol;
 
 out float vsSize;
+out float vsBornTime;
 
 out vec3 vsDirCol;
 
@@ -113,6 +116,8 @@ vec3 getDirBasedColor(vec2 dir)
 //  main
 //******************************************
 void main() {
+    float currentTime = time;
+    
     
     vec2 gravity = deltaTime * vec2(0.0, -0.02125);
     float max = 0.05;
@@ -123,6 +128,7 @@ void main() {
     vsPos = inPos;
     vsVel = inVel;
     vsVel += gravity;
+    vsBornTime = inBornTime;
     
     //outCol = vec3(0.0, 1.0, 0.0);
     

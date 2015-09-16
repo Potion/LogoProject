@@ -40,6 +40,8 @@ private:
     GLint               mVelAttrib;
     GLint               mColAttrib;
     GLint               mSizeAttrib;
+    GLint               mBornTimeAttrib;
+    
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
     GLint               mDeltaTimeUniform;
