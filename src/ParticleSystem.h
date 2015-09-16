@@ -42,6 +42,8 @@ private:
     GLint               mSizeAttrib;
     GLint               mMousePosUniform;
     GLint               mNewPosUniform;
+    GLint               mDeltaTimeUniform;
+
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
     
@@ -55,6 +57,8 @@ private:
     ci::gl::TextureRef  mBackgroundTex;
     
     ci::vec2            mLastMousePos;
+    double              mLastFrameTime;
+    float               mDeltaTime;
     
     //test functions
     float getRandomFloat(ci::vec2 currentPos);

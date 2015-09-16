@@ -5,6 +5,8 @@ const float MATH_PI = 3.1415926535897932384626433832795;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
+uniform float   deltaTime; // in seconds
+
 
 in vec2 inPos;
 in vec2 inVel;
@@ -112,7 +114,7 @@ vec3 getDirBasedColor(vec2 dir)
 //******************************************
 void main() {
     
-    vec2 gravity = vec2(0.0, -0.0005);
+    vec2 gravity = deltaTime * vec2(0.0, -0.02125);
     float max = 0.05;
     float maxSquared = max * max;
     

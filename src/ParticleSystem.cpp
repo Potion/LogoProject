@@ -113,6 +113,8 @@ void ParticleSystem::setup(float &posArray)
 
     mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
+    mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "deltaTime");
+
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
     mBackgroundTexUniform = glGetUniformLocation(mShaderProgram, "BackgroundTex");
@@ -126,6 +128,7 @@ void ParticleSystem::setup(float &posArray)
 
     std::cout << "    mMousePosUniform:" << mMousePosUniform << std::endl;
     std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
+    std::cout << "    mDeltaTimeUniform: " << mDeltaTimeUniform << std::endl;
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
@@ -138,7 +141,8 @@ void ParticleSystem::setup(float &posArray)
 //******************************************
 void ParticleSystem::update()
 {
-    
+    mDeltaTime = float(ci::app::getElapsedSeconds() - mLastFrameTime);
+    mLastFrameTime = ci::app::getElapsedSeconds();
 }
 
 //******************************************
@@ -167,8 +171,9 @@ void ParticleSystem::draw()
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
     
-    //  pass in the array of new positions
+    //  pass in the array of new positions and deltaTime
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
+    glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);
     
     
     //  disable the rasterizer

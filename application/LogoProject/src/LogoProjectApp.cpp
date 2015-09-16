@@ -148,6 +148,7 @@ void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
 //******************************************
 void LogoProjectApp::update()
 {
+    mParticles->update();
     
     //  if we don't have a new frame, skip the rest
     if (!mCapture || !mCapture->checkNewFrame()) {
