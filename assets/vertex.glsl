@@ -5,8 +5,7 @@ const float MATH_PI = 3.1415926535897932384626433832795;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
-uniform float   deltaTime; // in seconds
-
+uniform float deltaTime; // in seconds
 
 in vec2 inPos;
 in vec2 inVel;
@@ -133,7 +132,7 @@ void main() {
         outVel *= max;
     }
     
-    outPos += outVel;
+    outPos += outVel * deltaTime * 59.0f;
     
     //  keep in frame
     if (outPos.y < -1.0) {
