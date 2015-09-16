@@ -27,6 +27,10 @@ public:
     void updateMouse(ci::vec2 pos);
     void draw();
     void changeBackground();
+    
+    void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; };
+    void setPixelDecay( float decay) { mPixelDecaySpeed = decay; };
+    void setGravity( float gravity ) { mGravity = gravity; };
 
 protected:
     ParticleSystem();
@@ -63,6 +67,11 @@ private:
     ci::vec2            mLastMousePos;
     double              mLastFrameTime;
     float               mDeltaTime;
+    
+    //  adjustable parameters
+    float               mColorCycleSpeed;
+    float               mPixelDecaySpeed;
+    float               mGravity;
     
     //test functions
     float getRandomFloat(ci::vec2 currentPos);

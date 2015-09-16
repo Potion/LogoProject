@@ -2,13 +2,14 @@
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
-const float lifespan = 1.0f;
+const float lifespan = 1.5f;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
 uniform float deltaTime; // in seconds
 uniform float time;
 uniform float hue;
+
 
 in vec2 inPos;
 in vec2 inVel;
@@ -121,7 +122,7 @@ void main() {
     float currentTime = time;
     
     
-    vec2 gravity = deltaTime * vec2(0.0, -0.02125);
+    vec2 gravity = deltaTime * vec2(0.0, -0.008125);
     //vec2 gravity = vec2(0.0f, -0.0005);
     float max = 0.05;
     float maxSquared = max * max;

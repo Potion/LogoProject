@@ -16,6 +16,8 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 }
 
 ParticleSystem::ParticleSystem()
+: mColorCycleSpeed(3.0f)
+, mPixelDecaySpeed(1.0f)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -286,7 +288,8 @@ void ParticleSystem::loadTextures()
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
-    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
+//    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
+    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlur.png")), textureFormat);
     mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
     
     mBackgroundTex = mPotionTex;

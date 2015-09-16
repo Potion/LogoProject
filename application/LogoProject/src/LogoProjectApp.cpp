@@ -381,6 +381,9 @@ void LogoProjectApp::setUpParams()
 {
     mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(200, 150)));
     mParams->addParam("Motion threshold", &mThreshold).min(0).max(100).step(5);
+    
+    
+    
     mParams->addParam("BG Opacity", &mBGOpacity).min(0.01).max(1.0).step(0.01);
     mParams->addParam("Pixel Opacity", &mBasePixelOpacity).min(0.0).max(1.0).step(0.1);
     mParams->addParam("Pixel Decay", &mPixelDecaySpeed).min(0.0f).max(4.0f).step(0.05);
