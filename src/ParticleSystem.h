@@ -46,6 +46,7 @@ private:
     GLint               mNewPosUniform;
     GLint               mDeltaTimeUniform;
     GLint               mTimeUniform;
+    GLint               mHueUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;

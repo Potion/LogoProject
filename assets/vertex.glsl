@@ -2,12 +2,13 @@
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
-const float lifespan = 4.0f;
+const float lifespan = 1.0f;
 
 uniform vec2 mousePos;
 uniform vec2 newPositions[numNewPositions];
 uniform float deltaTime; // in seconds
 uniform float time;
+uniform float hue;
 
 in vec2 inPos;
 in vec2 inVel;
@@ -120,6 +121,7 @@ void main() {
     
     
     vec2 gravity = deltaTime * vec2(0.0, -0.02125);
+    //vec2 gravity = vec2(0.0f, -0.0005);
     float max = 0.05;
     float maxSquared = max * max;
     
@@ -139,10 +141,13 @@ void main() {
         vsVel *= max;
     }
     
+    //vsPos += vsVel;
     vsPos += vsVel * deltaTime * 59.0f;
     
-    //  keep in frame
-    if (vsPos.y < -1.0) {
+    //  reset particles when offscreen or dead
+    float lifetime = time - inBornTime;
+    
+    if (vsPos.y < -1.0 || lifetime > lifespan) {
         //  reset velocity
         //  use last position to generate random number for velocity direction
         vec2 randomSeed = inPos + vec2(inCol.r, inCol.g);
@@ -164,11 +169,13 @@ void main() {
         vsPos = newPositions[newIndex];
         //vsPos = mousePos;
         //vsPos = vec2(0.33, -1.73076);
+        
+        vsBornTime = time;
     }
     
     //dirCol = getDirBasedColor(outVel);
-    vsDirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
-    
+    //vsDirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
+    vsDirCol = hsv2rgb(vec3(hue, 1.0, 1.0));
     
     vsCol = inCol;
     vsSize = inSize;

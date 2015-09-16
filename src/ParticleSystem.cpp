@@ -117,6 +117,7 @@ void ParticleSystem::setup(float &posArray)
     mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
     mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "deltaTime");
     mTimeUniform = glGetUniformLocation(mShaderProgram, "time");
+    mHueUniform = glGetUniformLocation(mShaderProgram, "hue");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
@@ -134,6 +135,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mNewPosUniform: " << mNewPosUniform << std::endl;
     std::cout << "    mDeltaTimeUniform: " << mDeltaTimeUniform << std::endl;
     std::cout << "    mTimeUniform: " << mTimeUniform << std::endl;
+    std::cout << "    mHueUniform: " << mHueUniform << std::endl;
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
@@ -179,10 +181,12 @@ void ParticleSystem::draw()
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
     float time = ci::app::getElapsedSeconds();
+    float hue = float(int(time) % 360) / 360.f * 3.0;
     
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);
     glUniform1fv(mTimeUniform, 1, &time);
+    glUniform1fv(mHueUniform, 1, &hue);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -234,8 +238,8 @@ void ParticleSystem::draw()
     glUniform1i(mBackgroundTexUniform, 1);
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
-//    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    ci::gl::ScopedBlendAdditive additive;
+    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+//    ci::gl::ScopedBlendAdditive additive;
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
