@@ -186,7 +186,7 @@ void main() {
     //vsDirCol = hsv2rgb(vec3(inBaseCol.r, 1.0, 1.0));
     
     vsDecay = 1.0 - (lifetime / u_particleLife);
-    vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0, 1.0));
+    vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0f, 1.0f));
     
     vsBaseCol = inBaseCol; // recycle base color
     vsSize = inSize; // recycle size

@@ -16,7 +16,7 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 }
 
 ParticleSystem::ParticleSystem()
-: mColorCycleSpeed(23.0f)
+: mColorCycleSpeed(0.19f)
 , mGravity(0.008125)
 , mPixelsDoShrink(1)
 , mParticleLifespan(1.5f)
@@ -192,7 +192,7 @@ void ParticleSystem::draw()
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
     float time = ci::app::getElapsedSeconds();
-    float hue = (fmodf(time, 360.f)) / 360.f * mColorCycleSpeed;
+    float hue = (fmodf(time * mColorCycleSpeed, 1.f));
     
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);

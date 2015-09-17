@@ -387,7 +387,7 @@ void LogoProjectApp::setUpParams()
 
     function<void(float)> setter = bind(&ParticleSystem::setColorCycleSpeed, mParticles, std::placeholders::_1);
     function<float()> getter = bind(&ParticleSystem::getColorCycleSpeed, mParticles);
-    mParams->addParam("Color Cycle Speed", setter, getter);
+    mParams->addParam("Color Cycle Speed", setter, getter).step(.01);
 
     function<void(float)> setter2 = bind(&ParticleSystem::setGravity, mParticles, std::placeholders::_1);
     function<float()> getter2 = bind(&ParticleSystem::getGravity, mParticles);
