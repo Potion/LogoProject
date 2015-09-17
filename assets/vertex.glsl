@@ -138,6 +138,8 @@ void main() {
     vsBornTime = inBornTime;
     vsCurrentHue = inCurrentHue;
     
+    float lifespan = u_particleLife + (inBaseCol.b * 2.0); // use only as random value to vary lifespans
+    
     //outCol = vec3(0.0, 1.0, 0.0);
     
     // limit speed
@@ -153,7 +155,7 @@ void main() {
     //  reset particles when offscreen or dead
     float lifetime = u_time - inBornTime;
     
-    if (vsPos.y < -1.0 || lifetime > u_particleLife) {
+    if (vsPos.y < -1.0 || lifetime > lifespan) {
         //  reset velocity
         //  use last position to generate random number for velocity direction
         vec2 randomSeed = inPos + vec2(inBaseCol.r, inBaseCol.g);
@@ -185,7 +187,7 @@ void main() {
     //dirCol = getDirBasedColor(outVel);
     //vsDirCol = hsv2rgb(vec3(inBaseCol.r, 1.0, 1.0));
     
-    vsDecay = 1.0 - (lifetime / u_particleLife);
+    vsDecay = 1.0 - (lifetime / lifespan);
     vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0f, 1.0f));
     
     vsBaseCol = inBaseCol; // recycle base color
