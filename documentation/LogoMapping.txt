@@ -54,3 +54,20 @@ void setInitialValues()
 
 }
 
+Processing sketch:
+
+println("Positions: ");
+println("dot0x: " + map(293.446f, 0.0f, 640.0f, -1.0f, 1.0f));
+println("dot0y: " + map(118.522f, 0.0f, 480.0f, 1.0, -1.0));
+println("dot1x: " + map(383.816f, 0.0f, 640.0f, -1.0f, 1.0f));
+println("dot1y: " + map(272.243f, 0.0f, 480.0f, 1.0, -1.0));
+println("dot2x: " + map(272.154, 0.0f, 640.0f, -1.0f, 1.0f));
+println("dot2y: " + map(320.642f, 0.0f, 480.0f, 1.0, -1.0));
+println("dot3x: " + map(313.285f, 0.0f, 640.0f, -1.0f, 1.0f));
+println("dot3y: " + map(390.965f, 0.0f, 480.0f, 1.0, -1.0));
+
+println("Radii: ");
+println("dot0: " + map(183.718f / 2.0f, 0.0f, 640.0f, 0.0f, 2.0f));
+println("dot1: " + map(108.504f / 2.0f, 0.0f, 640.0f, 0.0f, 2.0f));
+println("dot2: " + map(51.273f / 2.0f, 0.0f, 640.0f, 0.0f, 2.0f));
+println("dot3: " + map(33.149f / 2.0f, 0.0f, 640.0f, 0.0f, 2.0f));

@@ -7,15 +7,26 @@ const float MATH_PI = 3.1415926535897932384626433832795;
 //  hard-code the dots
 const float scalar = 1.5f;
 
-const vec2 dot0pos = vec2(-0.08125001 * scalar, 0.50416666 * .666666f * scalar);
-const vec2 dot1pos = vec2(0.19062495 * scalar, -0.13333333 * .666666f * scalar);
-const vec2 dot2pos = vec2(-0.15625 * scalar, -0.33749998 * .666666f * scalar);
-const vec2 dot3pos = vec2(-0.021875024 * scalar, -0.6291667 * .666666f * scalar);
+//const vec2 dot0pos = vec2(-0.08125001 * scalar, 0.50416666 * .666666f * scalar);
+//const vec2 dot1pos = vec2(0.19062495 * scalar, -0.13333333 * .666666f * scalar);
+//const vec2 dot2pos = vec2(-0.15625 * scalar, -0.33749998 * .666666f * scalar);
+//const vec2 dot3pos = vec2(-0.021875024 * scalar, -0.6291667 * .666666f * scalar);
+//
+//const float dot0radius = 0.2890625 * scalar;
+//const float dot1radius = 0.1625 * scalar;
+//const float dot2radius = 0.0875 * scalar;
+//const float dot3radius = 0.053125 * scalar;
 
-const float dot0radius = 0.2890625 * scalar;
-const float dot1radius = 0.1625 * scalar;
-const float dot2radius = 0.0875 * scalar;
-const float dot3radius = 0.053125 * scalar;
+
+const vec2 dot0pos = vec2(-0.08298123 * scalar, 0.50615835 * .666666f * scalar);
+const vec2 dot1pos = vec2(0.19942498 * scalar, -0.13434589 * .666666f * scalar);
+const vec2 dot2pos = vec2(-0.14951879 * scalar, -0.3360083 * .666666f * scalar);
+const vec2 dot3pos = vec2(-0.020984352 * scalar, -0.6290208 * .666666f * scalar);
+
+const float dot0radius = 0.28705937 * scalar;
+const float dot1radius = 0.1695375 * scalar;
+const float dot2radius = 0.08011406 * scalar;
+const float dot3radius = 0.05179531 * scalar;
 
 
 uniform vec2 u_mousePos;
@@ -231,7 +242,13 @@ void main() {
     
     //**********************************
     //  STICKING ON THE DOTS
-    if (isStuck) lifespan += 4.0f;
+    if (isStuck) {
+        if (u_isMotionless) {
+            lifespan += 120.0f;
+        } else {
+            lifespan += 4.0f;
+        }
+    }
     //**********************************
     
     ////////////////////////////////////

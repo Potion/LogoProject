@@ -84,12 +84,12 @@ void LogoProjectApp::setup()
     struct tm *now = localtime(&t);
     ci::randSeed(now->tm_sec);
     
-    //  Add correct asset path
-    ci::fs::path relativePath = "../../../../../assets";
-    ci::fs::path absolutePath = ci::fs::canonical(relativePath);
-    absolutePath.make_preferred().native();
-    ci::app::addAssetDirectory(relativePath);
-
+//    //  Add correct asset path
+//    ci::fs::path relativePath = "../../../../../assets";
+//    ci::fs::path absolutePath = ci::fs::canonical(relativePath);
+//    absolutePath.make_preferred().native();
+//    ci::app::addAssetDirectory(relativePath);
+//
     //  print out OpenGL version
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
     
@@ -173,6 +173,10 @@ void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
         mIsDrawingFramerate = !mIsDrawingFramerate;
     }
     
+    if (event.getChar() == 'q' || event.getCode() == 27) {
+        mCapture->stop();
+        quit();
+    }
 }
 
 //******************************************
