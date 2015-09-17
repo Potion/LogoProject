@@ -257,6 +257,12 @@ void main() {
     
     float lifetime = u_time - inBornTime;
     
+    //  if we are coming out of motionless period, reset lifetime
+    if (!u_isMotionless && lifetime > lifespan + 1.0f) {
+        lifetime = 0.0f;
+        vsBornTime = u_time;
+    }
+    
     if (vsPos.y < -1.0 || lifetime > lifespan) {
         //  pick new velocity
         vec2 randomSeed = inPos + vec2(inBaseCol.r, inBaseCol.g);
