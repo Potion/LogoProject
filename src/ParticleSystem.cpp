@@ -16,10 +16,10 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 }
 
 ParticleSystem::ParticleSystem()
-: mColorCycleSpeed(3.0f)
+: mColorCycleSpeed(23.0f)
 , mPixelDecaySpeed(1.0f)
 , mGravity(0.008125)
-, mIsAdditiveBlend(false)
+, mPixelsDoShrink(1)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -41,7 +41,7 @@ void ParticleSystem::setup(float &posArray)
     loadTextures();
     
     //  array of values
-    GLfloat particleData[logo::NUM_PARTICLES * 9]; // two slots for position, two for velocity, three for color, one for size
+    GLfloat particleData[logo::NUM_PARTICLES * 10]; // two slots for position, two for velocity, three for color, one for current hue, one for size, one for born time
     
     for (int i = 0; i < logo::NUM_PARTICLES; i++) {
         //  position is completely random
@@ -50,21 +50,20 @@ void ParticleSystem::setup(float &posArray)
         //  velocity is normalized vector
         float randNum3 = ci::Rand::randFloat(0.0f, M_PI * 2.0f);
         
-        particleData[(i*9) + 0] = randNum;                          // pos.x
-        particleData[(i*9) + 1] = randNum2;                         // pos.y
+        particleData[(i*10) + 0] = randNum;                         // pos.x
+        particleData[(i*10) + 1] = randNum2;                        // pos.y
         
-        particleData[(i*9) + 2] = cos(randNum3) * 0.03;             // vel.x
-        particleData[(i*9) + 3] = sin(randNum3) * 0.03;             // vel.y
+        particleData[(i*10) + 2] = cos(randNum3) * 0.03;            // vel.x
+        particleData[(i*10) + 3] = sin(randNum3) * 0.03;            // vel.y
         
-        particleData[(i*9) + 4] = ci::Rand::randFloat();            // col.r
-//        if (particleData[(i*8) + 4] < 0.0) {
-//            particleData[(i*8) + 4] += 1.0;
-//        }
-        particleData[(i*9) + 5] = ci::Rand::randFloat();            // col.g
-        particleData[(i*9) + 6] = ci::Rand::randFloat();            // col.b
+        particleData[(i*10) + 4] = ci::Rand::randFloat();           // col.r
+        particleData[(i*10) + 5] = ci::Rand::randFloat();           // col.g
+        particleData[(i*10) + 6] = ci::Rand::randFloat();           // col.b
         
-        particleData[(i*9) + 7] = ci::Rand::randFloat(3.0f, 9.0f);  // baseSize
-        particleData[(i*9) + 8] = ci::app::getElapsedSeconds();     // born time
+        particleData[(i*10) + 7] = ci::Rand::randFloat();           // col.h
+        
+        particleData[(i*10) + 8] = ci::Rand::randFloat(3.0f, 9.0f); // baseSize
+        particleData[(i*10) + 9] = ci::app::getElapsedSeconds();    // born time
     }
     
     std::cout << "ParticleSystem::setup" << std::endl;
@@ -102,8 +101,8 @@ void ParticleSystem::setup(float &posArray)
     glAttachShader(mShaderProgram, fragmentShader);
 
     // before linking program, specify which output attributes we want to capture into a buffer
-    const GLchar * feedbackVaryings[5] = {"vsPos", "vsVel", "vsCol", "vsSize", "vsBornTime"};
-    glTransformFeedbackVaryings(mShaderProgram, 5, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+    const GLchar * feedbackVaryings[6] = {"vsPos", "vsVel", "vsBaseCol", "vsCurrentHue", "vsSize", "vsBornTime"};
+    glTransformFeedbackVaryings(mShaderProgram, 6, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
     
     glBindFragDataLocation(mShaderProgram, 0, "fsColor");
 
@@ -113,7 +112,8 @@ void ParticleSystem::setup(float &posArray)
     
     mPosAttrib = glGetAttribLocation(mShaderProgram, "inPos");
     mVelAttrib = glGetAttribLocation(mShaderProgram, "inVel");
-    mColAttrib = glGetAttribLocation(mShaderProgram, "inCol");
+    mColAttrib = glGetAttribLocation(mShaderProgram, "inBaseCol");
+    mCurrentHueAttrib = glGetAttribLocation(mShaderProgram, "inCurrentHue");
     mSizeAttrib = glGetAttribLocation(mShaderProgram, "inSize");
     mBornTimeAttrib = glGetAttribLocation(mShaderProgram, "inBornTime");
 
@@ -123,6 +123,7 @@ void ParticleSystem::setup(float &posArray)
     mTimeUniform = glGetUniformLocation(mShaderProgram, "time");
     mHueUniform = glGetUniformLocation(mShaderProgram, "hue");
     mGravityUniform = glGetUniformLocation(mShaderProgram, "gravityPull");
+    mShrinkUniform = glGetUniformLocation(mShaderProgram, "shrinking");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
@@ -133,6 +134,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mPosAttrib: " << mPosAttrib << std::endl;
     std::cout << "    mVelAttrib: " << mVelAttrib << std::endl;
     std::cout << "    mColAttrib: " << mColAttrib << std::endl;
+    std::cout << "    mCurrentHueAttrib: " << mCurrentHueAttrib << std::endl;
     std::cout << "    mSizeAttrib: " << mSizeAttrib << std::endl;
     std::cout << "    mBornTimeAttrib: " << mBornTimeAttrib << std::endl;
 
@@ -148,7 +150,6 @@ void ParticleSystem::setup(float &posArray)
     
     std::cout << "\n" << std::endl;
     std::cout << "Max number of transform varyings: " << GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS << std::endl;
-    
     
     mPosArrayPointer = &posArray;
 }
@@ -195,6 +196,7 @@ void ParticleSystem::draw()
     glUniform1fv(mTimeUniform, 1, &time);
     glUniform1fv(mHueUniform, 1, &hue);
     glUniform1fv(mGravityUniform, 1, &mGravity);
+    glUniform1i(mShrinkUniform, mPixelsDoShrink);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -202,19 +204,22 @@ void ParticleSystem::draw()
     //  specify the source buffer
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     glEnableVertexAttribArray(mPosAttrib);
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), 0);
     
     glEnableVertexAttribArray(mVelAttrib);
-    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(2 * sizeof(float)));
     
     glEnableVertexAttribArray(mColAttrib);
-    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+    
+    glEnableVertexAttribArray(mCurrentHueAttrib);
+    glVertexAttribPointer(mCurrentHueAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(7 * sizeof(float)));
     
     glEnableVertexAttribArray(mSizeAttrib);
-    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
     
     glEnableVertexAttribArray(mBornTimeAttrib);
-    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
+    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(9 * sizeof(float)));
     
     
     //  specify target buffer
@@ -229,6 +234,7 @@ void ParticleSystem::draw()
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
+    glDisableVertexAttribArray(mCurrentHueAttrib);
     glDisableVertexAttribArray(mSizeAttrib);
     glDisableVertexAttribArray(mBornTimeAttrib);
     
@@ -254,24 +260,29 @@ void ParticleSystem::draw()
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
     
     glEnableVertexAttribArray(mPosAttrib);
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), 0);
     
     glEnableVertexAttribArray(mVelAttrib);
-    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(mVelAttrib, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(2 * sizeof(float)));
     
     glEnableVertexAttribArray(mColAttrib);
-    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(mColAttrib, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+    
+    glEnableVertexAttribArray(mCurrentHueAttrib);
+    glVertexAttribPointer(mCurrentHueAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(7 * sizeof(float)));
     
     glEnableVertexAttribArray(mSizeAttrib);
-    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(mSizeAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
     
     glEnableVertexAttribArray(mBornTimeAttrib);
-    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
+    glVertexAttribPointer(mBornTimeAttrib, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(9 * sizeof(float)));
+    
     
     glDrawArrays(GL_POINTS, 0, logo::NUM_PARTICLES);
     glDisableVertexAttribArray(mPosAttrib);
     glDisableVertexAttribArray(mVelAttrib);
     glDisableVertexAttribArray(mColAttrib);
+    glDisableVertexAttribArray(mCurrentHueAttrib);
     glDisableVertexAttribArray(mSizeAttrib);
     glDisableVertexAttribArray(mBornTimeAttrib);
 }
@@ -309,20 +320,14 @@ void ParticleSystem::loadTextures()
 }
 
 
-////******************************************
-//// toggle additive vs not (not working)
-////******************************************
-//void ParticleSystem::toggleBlendMode()
-//{
-//    mIsAdditiveBlend = !mIsAdditiveBlend;
-//    std::cout << "ParticleSystem::toggleBlendMode: " << mIsAdditiveBlend << std::endl;
-//    if (mIsAdditiveBlend) {
-//        ci::gl::disableAlphaBlending();
-//        ci::gl::enableAdditiveBlending();
-//    } else {
-//        ci::gl::enableAlphaBlending();
-//    }
-//}
+//******************************************
+// toggle whether pixels shrink upon decay
+//******************************************
+void ParticleSystem::toggleShrinkMode()
+{
+    mPixelsDoShrink = !mPixelsDoShrink;
+    std::cout << "mPixelsDoShrink: " << mPixelsDoShrink << std::endl;
+}
 
 //******************************************
 // create shader and print out debugging info

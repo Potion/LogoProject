@@ -10,25 +10,26 @@ uniform float deltaTime; // in seconds
 uniform float time;
 uniform float hue;
 uniform float gravityPull;
+uniform bool shrinking;
 
-
+//  vertex array (for ping-ponging)
 in vec2 inPos;
 in vec2 inVel;
-in vec3 inCol;
-
+in vec3 inBaseCol;
+in float inCurrentHue;
 in float inSize;
 in float inBornTime;
 
 out vec2 vsPos;
 out vec2 vsVel;
-out vec3 vsCol;
-
+out vec3 vsBaseCol;
+out float vsCurrentHue;
 out float vsSize;
 out float vsBornTime;
 
-out vec3 vsDirCol;
+//  passed only to fragment shader
 out float vsDecay;
-
+out vec3 vsFragCol;
 
 //******************************************
 //  generate a pseudo random direction based on particle's current position
@@ -134,6 +135,7 @@ void main() {
     vsVel = inVel;
     vsVel += gravity;
     vsBornTime = inBornTime;
+    vsCurrentHue = inCurrentHue;
     
     //outCol = vec3(0.0, 1.0, 0.0);
     
@@ -153,8 +155,8 @@ void main() {
     if (vsPos.y < -1.0 || lifetime > lifespan) {
         //  reset velocity
         //  use last position to generate random number for velocity direction
-        vec2 randomSeed = inPos + vec2(inCol.r, inCol.g);
-        vec2 randomSeed2 = inPos + vec2(inCol.g, inCol.b);
+        vec2 randomSeed = inPos + vec2(inBaseCol.r, inBaseCol.g);
+        vec2 randomSeed2 = inPos + vec2(inBaseCol.g, inBaseCol.b);
 
         float newVelSeed = getRandomFloat(randomSeed);
 
@@ -171,19 +173,26 @@ void main() {
         int newIndex = int(newNum);
         vsPos = newPositions[newIndex];
         //vsPos = mousePos;
-        //vsPos = vec2(0.33, -1.73076);
         
+        //  new color
+        vsCurrentHue = hue;
+        
+        //  reset life
         vsBornTime = time;
     }
     
     //dirCol = getDirBasedColor(outVel);
-    //vsDirCol = hsv2rgb(vec3(inCol.r, 1.0, 1.0));
+    //vsDirCol = hsv2rgb(vec3(inBaseCol.r, 1.0, 1.0));
     
     vsDecay = 1.0 - (lifetime / lifespan);
-    vsDirCol = hsv2rgb(vec3(hue, 1.0, 1.0));
+    vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0, 1.0));
     
-    vsCol = inCol;
-    vsSize = inSize;
-    gl_PointSize = vsSize;
+    vsBaseCol = inBaseCol; // recycle base color
+    vsSize = inSize; // recycle size
+    if (shrinking) {
+        gl_PointSize = vsSize * vsDecay;
+    } else {
+        gl_PointSize = vsSize;
+    }
     gl_Position = vec4(vsPos, 0.0, 1.0);
 }

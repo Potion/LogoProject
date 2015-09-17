@@ -4,9 +4,8 @@ uniform sampler2D ParticleTex;
 uniform sampler2D BackgroundTex;
 
 in vec2 vsPos;
-in vec3 vsCol;
+in vec3 vsFragCol;
 
-in vec3 vsDirCol;
 in float vsDecay;
 
 out vec4 fsColor;
@@ -37,7 +36,7 @@ void main() {
     vec4 logoCol = texture(BackgroundTex, texCoord);
     
     fsColor = texture(ParticleTex, gl_PointCoord);
-    fsColor = vec4(vsDirCol, fsColor.a * vsDecay);
+    fsColor = vec4(vsFragCol, fsColor.a * vsDecay);
     
     vec3 potionBlue = vec3(72.0f/255.0f, 146.0f/255.0f, 207.0f/255.0f);
     

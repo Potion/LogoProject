@@ -37,7 +37,7 @@ public:
     float getPixelDecaySpeed() { return mPixelDecaySpeed; }
     float getGravity() { return mGravity; };
     
-    //void toggleBlendMode();
+    void toggleShrinkMode();
 
 protected:
     ParticleSystem();
@@ -51,6 +51,7 @@ private:
     GLint               mVelAttrib;
     GLint               mColAttrib;
     GLint               mSizeAttrib;
+    GLint               mCurrentHueAttrib;
     GLint               mBornTimeAttrib;
     
     GLint               mMousePosUniform;
@@ -59,6 +60,7 @@ private:
     GLint               mTimeUniform;
     GLint               mHueUniform;
     GLint               mGravityUniform;
+    GLint               mShrinkUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
@@ -80,7 +82,7 @@ private:
     float               mColorCycleSpeed;
     float               mPixelDecaySpeed;
     float               mGravity;
-    bool                mIsAdditiveBlend;
+    int                 mPixelsDoShrink;
     
     
     //test functions
