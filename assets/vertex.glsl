@@ -170,8 +170,25 @@ void main() {
     //}
     //////*******DIDN'T WORK********
 
-    
-    vsVel += gravity;
+    //**********************************
+    //  STICKING ON THE DOTS
+    //  see if close to the dots
+    bool isStuck = false;
+    if (distance(vsPos, dot0pos) < dot0radius) {
+        isStuck = true;
+        vsVel *= .45;
+    } else if (distance(vsPos, dot1pos) < dot1radius) {
+        isStuck = true;
+        vsVel *= .45;
+    } else if (distance(vsPos, dot2pos) < dot2radius) {
+        isStuck = true;
+        vsVel *= .45;
+    } else if (distance(vsPos, dot3pos) < dot3radius) {
+        isStuck = true;
+        vsVel *= .45;
+    } else {
+        vsVel += gravity;
+    }
     
     // limit speed
     float speedSquared = dot(vsVel, vsVel);
@@ -179,6 +196,7 @@ void main() {
         vec2 norm = normalize(vsVel);
         vsVel *= max;
     }
+    //***************************************
     
     //vsPos += vsVel;
     vsPos += vsVel * u_deltaTime * 59.0f;
@@ -186,6 +204,11 @@ void main() {
     //  reset particles when offscreen or dead
     //  each particle has slightly different lifespan
     float lifespan = u_particleLife + (inBaseCol.b * 2.0); // use only as random value to vary lifespans
+    
+    //**********************************
+    //  STICKING ON THE DOTS
+    if (isStuck) lifespan += 4.0f;
+    //**********************************
     
     float lifetime = u_time - inBornTime;
     
