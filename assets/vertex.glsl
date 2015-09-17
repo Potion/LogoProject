@@ -176,16 +176,16 @@ void main() {
     bool isStuck = false;
     if (distance(vsPos, dot0pos) < dot0radius) {
         isStuck = true;
-        vsVel *= .45;
+        vsVel *= .89;
     } else if (distance(vsPos, dot1pos) < dot1radius) {
         isStuck = true;
-        vsVel *= .45;
+        vsVel *= .89;
     } else if (distance(vsPos, dot2pos) < dot2radius) {
         isStuck = true;
-        vsVel *= .45;
+        vsVel *= .89;
     } else if (distance(vsPos, dot3pos) < dot3radius) {
         isStuck = true;
-        vsVel *= .45;
+        vsVel *= .89;
     } else {
         vsVel += gravity;
     }
