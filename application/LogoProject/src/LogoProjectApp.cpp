@@ -381,10 +381,7 @@ void LogoProjectApp::setUpParams()
     mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(300, 200)));
     mParams->addParam("Motion threshold", &mThreshold).min(0).max(100).step(5);
     
-    
-    
     mParams->addParam("BG Opacity", &mBGOpacity).min(0.01).max(1.0).step(0.01);
-    //mParams->addParam("Pixel Opacity", &mBasePixelOpacity).min(0.0).max(1.0).step(0.1);
 
     function<void(float)> setter = bind(&ParticleSystem::setColorCycleSpeed, mParticles, std::placeholders::_1);
     function<float()> getter = bind(&ParticleSystem::getColorCycleSpeed, mParticles);
@@ -405,6 +402,10 @@ void LogoProjectApp::setUpParams()
     function<void(float)> setter4 = bind(&ParticleSystem::setParticleOpacity, mParticles, std::placeholders::_1);
     function<float()> getter4 = bind(&ParticleSystem::getParticleOpacity, mParticles);
     mParams->addParam("Particle Opacity", setter4, getter4).step(.01);
+    
+    function<void(float)> setter5 = bind(&ParticleSystem::setSlipperiness, mParticles, std::placeholders::_1);
+    function<float()> getter5 = bind(&ParticleSystem::getSlipperiness, mParticles);
+    mParams->addParam("Slipperiness", setter5, getter5).step(.01);
     
 }
 

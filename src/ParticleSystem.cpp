@@ -22,6 +22,7 @@ ParticleSystem::ParticleSystem()
 , mParticleLifespan(0.13f)
 , mMotionBasedHue(false)
 , mParticleOpacity(1.0f)
+, mSlipperiness(0.89f)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -128,6 +129,7 @@ void ParticleSystem::setup(float &posArray)
     mShrinkUniform = glGetUniformLocation(mShaderProgram, "u_shrinking");
     mParticleOpacityUniform = glGetUniformLocation(mShaderProgram, "u_baseOpacity");
     mParticleLifeUniform = glGetUniformLocation(mShaderProgram, "u_particleLife");
+    mSlipperinessUniform = glGetUniformLocation(mShaderProgram, "u_slipperiness");
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
     //mBackgroundTexUniform = glGetUniformLocation(mShaderProgram, "BackgroundTex");
@@ -149,6 +151,8 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mGravityUniform: " << mGravityUniform << std::endl;
     std::cout << "    mShrinkUniform: " << mShrinkUniform << std::endl;
     std::cout << "    mParticleLifeUniform: " << mParticleLifeUniform << std::endl;
+    std::cout << "    mParticleOpacityUniform: " << mParticleLifeUniform << std::endl;
+    std::cout << "    mSlipperinessUniform: " << mSlipperinessUniform << std::endl;
     
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     //std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
@@ -215,6 +219,7 @@ void ParticleSystem::draw(int amountOfMotion)
     glUniform1i(mShrinkUniform, mPixelsDoShrink);
     glUniform1fv(mParticleLifeUniform, 1, &mParticleLifespan);
     glUniform1fv(mParticleOpacityUniform, 1, &mParticleOpacity);
+    glUniform1fv(mSlipperinessUniform, 1, &mSlipperiness);
     
     
     //  disable the rasterizer

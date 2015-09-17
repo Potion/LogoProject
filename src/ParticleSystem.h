@@ -33,11 +33,13 @@ public:
     void setGravity( float gravity ) { mGravity = gravity; }
     void setParticleOpacity (float opacity) { mParticleOpacity = opacity; }
     void setParticleLifespan( float lifespan ) { mParticleLifespan = lifespan; }
+    void setSlipperiness( float slippy ) { mSlipperiness = slippy; }
     
     float getColorCycleSpeed() { return mColorCycleSpeed; }
     float getGravity() { return mGravity; }
     float getParticleOpacity() { return mParticleOpacity; }
     float getParticleLifespan() { return mParticleLifespan; }
+    float getSlipperiness() { return mSlipperiness; }
     
     void toggleShrinkMode();
     void toggleMotionBasedHue();
@@ -66,6 +68,7 @@ private:
     GLint               mShrinkUniform;
     GLint               mParticleOpacityUniform;
     GLint               mParticleLifeUniform;
+    GLint               mSlipperinessUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
@@ -90,6 +93,7 @@ private:
     float               mParticleOpacity;
     float               mParticleLifespan;
     bool                mMotionBasedHue;
+    float               mSlipperiness;
     
     
     //test functions

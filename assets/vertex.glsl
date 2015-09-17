@@ -26,6 +26,7 @@ uniform float u_hue;
 uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
+uniform float u_slipperiness;
 
 //uniform sampler2D BackgroundTex; // doesn't work in VS
 
@@ -185,16 +186,16 @@ void main() {
     bool isStuck = false;
     if (distance(hypotheticalPos, dot0pos) < dot0radius) {
         isStuck = true;
-        vsVel *= .89;
+        vsVel *= u_slipperiness;
     } else if (distance(hypotheticalPos, dot1pos) < dot1radius) {
         isStuck = true;
-        vsVel *= .89;
+        vsVel *= u_slipperiness;
     } else if (distance(hypotheticalPos, dot2pos) < dot2radius) {
         isStuck = true;
-        vsVel *= .89;
+        vsVel *= u_slipperiness;
     } else if (distance(hypotheticalPos, dot3pos) < dot3radius) {
         isStuck = true;
-        vsVel *= .89;
+        vsVel *= u_slipperiness;
     } else {
         vsVel += gravity;
     }
