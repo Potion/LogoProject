@@ -25,7 +25,7 @@ uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
 
-//uniform sampler2D BackgroundTex;
+uniform sampler2D BackgroundTex;
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -152,44 +152,67 @@ void main() {
     vsBornTime = inBornTime;
     vsCurrentHue = inCurrentHue;
     
-    //////*******DIDN'T WORK********
-    //////  check to see if we're over the logo
+    ////////*******NOT WORKING********
+    ////////  check to see if we're over the logo
     //vec2 texCoord;
     //texCoord.x = (vsPos.x + 1.0f) / 2.0f;
     //texCoord.y = (vsPos.y + 1.0f) / 2.0f;
     //
-    //vec4 bgColor = texture(BackgroundTex, texCoord);
-    //vsBGAlpha = bgColor.a;
-    //
-    ////vec3 overLogo = texture(BackgroundTex, vsPos).xyz;
-    ////  slow down if we're on the logo
-    //if (vsBGAlpha == 1.0) {
+    //vec4 bgColor = textureLod(BackgroundTex, texCoord, 0.0);
+    ////vsBGAlpha = bgColor.a;
+    ////
+    //////vec3 overLogo = texture(BackgroundTex, vsPos).xyz;
+    //////  slow down if we're on the logo
+    //if (bgColor.g > 0.5) {
     //    vsVel *= 0.5f;
     //} else {
     //    vsVel += gravity;
     //}
-    //////*******DIDN'T WORK********
+    ////////*******NOT WORKING********
 
     //**********************************
     //  STICKING ON THE DOTS
     //  see if close to the dots
+    
+    //  adjust for 4x3 aspect ratio of window
+    vec2 hypotheticalPos;
+    hypotheticalPos.x = vsPos.x * 1.33333;
+    hypotheticalPos.y = vsPos.y;
+    
+//    bool isStuck = false;
+//    if (distance(vsPos, dot0pos) < dot0radius) {
+//        isStuck = true;
+//        vsVel *= .89;
+//    } else if (distance(vsPos, dot1pos) < dot1radius) {
+//        isStuck = true;
+//        vsVel *= .89;
+//    } else if (distance(vsPos, dot2pos) < dot2radius) {
+//        isStuck = true;
+//        vsVel *= .89;
+//    } else if (distance(vsPos, dot3pos) < dot3radius) {
+//        isStuck = true;
+//        vsVel *= .89;
+//    } else {
+//        vsVel += gravity;
+//    }
+
     bool isStuck = false;
-    if (distance(vsPos, dot0pos) < dot0radius) {
+    if (distance(hypotheticalPos, dot0pos) < dot0radius) {
         isStuck = true;
         vsVel *= .89;
-    } else if (distance(vsPos, dot1pos) < dot1radius) {
+    } else if (distance(hypotheticalPos, dot1pos) < dot1radius) {
         isStuck = true;
         vsVel *= .89;
-    } else if (distance(vsPos, dot2pos) < dot2radius) {
+    } else if (distance(hypotheticalPos, dot2pos) < dot2radius) {
         isStuck = true;
         vsVel *= .89;
-    } else if (distance(vsPos, dot3pos) < dot3radius) {
+    } else if (distance(hypotheticalPos, dot3pos) < dot3radius) {
         isStuck = true;
         vsVel *= .89;
     } else {
         vsVel += gravity;
     }
-    
+
     // limit speed
     float speedSquared = dot(vsVel, vsVel);
     if (speedSquared > maxSquared) {

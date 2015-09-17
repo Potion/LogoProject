@@ -153,6 +153,7 @@ void ParticleSystem::setup(float &posArray)
     
     std::cout << "\n" << std::endl;
     std::cout << "Max number of transform varyings: " << GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS << std::endl;
+    std::cout << "MaxVertexTexture Image Units: " << GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS << std::endl;
     
     mPosArrayPointer = &posArray;
 }
@@ -201,6 +202,7 @@ void ParticleSystem::draw()
     glUniform1fv(mGravityUniform, 1, &mGravity);
     glUniform1i(mShrinkUniform, mPixelsDoShrink);
     glUniform1fv(mParticleLifeUniform, 1, &mParticleLifespan);
+    
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -310,8 +312,8 @@ void ParticleSystem::loadTextures()
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
-//    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
-    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlur.png")), textureFormat);
+    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesGreen.png")), textureFormat);
+//    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlur.png")), textureFormat);
     //mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlurRed.png")), textureFormat);
     mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
     
