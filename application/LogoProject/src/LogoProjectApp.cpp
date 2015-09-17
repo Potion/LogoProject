@@ -50,15 +50,16 @@ class LogoProjectApp : public App {
     int                 mLastGoodFrame;
     int                 mThreshold;
     
-    std::vector<ci::vec2>   getWhitePixels(cv::Mat &mat);
+    std::vector<cv::Point2i>   getWhitePixels(cv::Mat &mat);
     ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
     void                sendRandomPoint(ci::vec2 point);
-    void                updateNewPositions(std::vector<ci::vec2> &vector);
+    void                updateNewPositions(std::vector<cv::Point2i> &vector);
     void                resetPosArray();
     
     float               mNewPositions[logo::NUM_NEW_POSITIONS * 2];
     
     ci::vec2            normalizePosition(ci::vec2 &pos, int width, int height);
+    cv::Point2f         normalizePositionCV(cv::Point2i &pos, int width, int height);
     
     //  GUI information
     params::InterfaceGlRef  mParams;
@@ -188,7 +189,7 @@ void LogoProjectApp::update()
     cv::threshold(tempDiff, tempDiff, mThreshold, 255, CV_THRESH_BINARY);
     
     //  send one random movement location to particle system
-    std::vector<ci::vec2> whitePixels = getWhitePixels(tempDiff);
+    std::vector<cv::Point2i> whitePixels = getWhitePixels(tempDiff);
     if (whitePixels.size() > 0) {
         //sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
         updateNewPositions(whitePixels);
@@ -294,18 +295,12 @@ cv::Mat LogoProjectApp::convertToOCVMat(ci::Surface &surface)
 //******************************************
 //  get a vector of all white pixels from motion detection
 //******************************************
-std::vector<ci::vec2> LogoProjectApp::getWhitePixels(cv::Mat &mat)
+std::vector<cv::Point2i> LogoProjectApp::getWhitePixels(cv::Mat &mat)
 {
-    std::vector<ci::vec2> whitePixels;
-    //  check for white pixels
-    for ( int y = 0; y < mat.rows; y++) {
-        for ( int x = 0; x < mat.cols; x++) {
-            if (mat.at<unsigned char>(y, x) == 255) {
-                whitePixels.push_back(ci::vec2(x, y));
-            }
-        }
-    }
-    return whitePixels;
+    std::vector<cv::Point2i> whitePixelsCV;
+    cv::findNonZero(mat, whitePixelsCV);
+
+    return whitePixelsCV;
 }
 
 //******************************************
@@ -331,22 +326,20 @@ void LogoProjectApp::sendRandomPoint(ci::vec2 point)
 }
 
 //******************************************
-//  choose random 250-point sampling of white pixels
+//  choose random xxx-point sampling of white pixels
 //******************************************
-void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
+void LogoProjectApp::updateNewPositions(std::vector<cv::Point2i> &vector)
 {
-    //std::cout << "LogoProjectApp::updateNewPositions: " << vector.size() << " particles, " << "frame #" << ci::app::getElapsedFrames() << std::endl;
-    
     //  if we have max position number or less, send all of them to the particle system
     if (vector.size() < logo::NUM_NEW_POSITIONS) {
         //std::cout << "Less than" << logo::NUM_NEW_POSITIONS << "!!!!" << std::endl;
         int index = 0;
         
         //  grab all positions
-        for (ci::vec2 eachVector : vector) {
-            eachVector = normalizePosition(eachVector, logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
-            mNewPositions[index] = eachVector.x;
-            mNewPositions[index + 1] = eachVector.y;
+        for (cv::Point2i eachVector : vector) {
+            cv::Point2f newPoint2f = normalizePositionCV(eachVector, logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
+            mNewPositions[index] = newPoint2f.x;
+            mNewPositions[index + 1] = newPoint2f.y;
             index += 2;
         }
         
@@ -367,9 +360,9 @@ void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
         
         //  put the first ones in the array
         for (int i = 0; i < logo::NUM_NEW_POSITIONS; i+=2) {
-            vector[indices[i]] = normalizePosition(vector[indices[i]], logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
-            mNewPositions[i] = vector[indices[i]].x;
-            mNewPositions[i+1] = vector[indices[i]].y;
+            cv::Point2f newPoint2f = normalizePositionCV(vector[indices[i]], logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
+            mNewPositions[i] = newPoint2f.x;
+            mNewPositions[i+1] = newPoint2f.y;
         }
     }
 }
@@ -412,7 +405,6 @@ void LogoProjectApp::resetPosArray()
     for (int i = 0; i < logo::NUM_NEW_POSITIONS; i++) {
         mNewPositions[i*2] = ci::randFloat(-1.0, 1.0);
         mNewPositions[i*2 + 1] = ci::randFloat(-2.0, -1.5);
-        //std::cout << "    " << i << ": x: " << mNewPositions[i*2] << ", y: " << mNewPositions[i*2 + 1] << std::endl;
     }
 }
 
@@ -439,5 +431,27 @@ ci::vec2 LogoProjectApp::normalizePosition(ci::vec2 &pos, int width, int height)
     normPos.y = normY;
     return normPos;
 }
+
+cv::Point2f LogoProjectApp::normalizePositionCV(cv::Point2i &pos, int width, int height)
+{
+    cv::Point2f    normPos;
+    float normX, normY;
+    normX = (float)pos.x / (float)width;
+    normX *= 2.0f;
+    normX -= 1.0f;
+    
+    normY = (float)pos.y / (float)height;
+    normY *= 2.0f;
+    normY -= 1.0f;
+    normY *= -1.0f;
+    
+    normX = glm::clamp(normX, -1.0f, 1.0f);
+    normY = glm::clamp(normY, -1.0f, 1.0f);
+    
+    normPos.x = normX;
+    normPos.y = normY;
+    return normPos;
+}
+
 
 CINDER_APP( LogoProjectApp, RendererGl )
