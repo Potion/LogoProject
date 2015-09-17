@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
@@ -12,6 +12,8 @@ uniform float u_hue;
 uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
+
+//uniform sampler2D BackgroundTex;
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -31,6 +33,7 @@ out float vsBornTime;
 //  passed only to fragment shader
 out float vsDecay;
 out vec3 vsFragCol;
+//out float vsBGAlpha;
 
 //******************************************
 //  generate a pseudo random direction based on particle's current position
@@ -132,15 +135,32 @@ void main() {
     
     //int number = numNewPositions;
     
+    //  set the ping-ponging variables
     vsPos = inPos;
     vsVel = inVel;
-    vsVel += gravity;
     vsBornTime = inBornTime;
     vsCurrentHue = inCurrentHue;
     
-    float lifespan = u_particleLife + (inBaseCol.b * 2.0); // use only as random value to vary lifespans
+    //////*******DIDN'T WORK********
+    //////  check to see if we're over the logo
+    //vec2 texCoord;
+    //texCoord.x = (vsPos.x + 1.0f) / 2.0f;
+    //texCoord.y = (vsPos.y + 1.0f) / 2.0f;
+    //
+    //vec4 bgColor = texture(BackgroundTex, texCoord);
+    //vsBGAlpha = bgColor.a;
+    //
+    ////vec3 overLogo = texture(BackgroundTex, vsPos).xyz;
+    ////  slow down if we're on the logo
+    //if (vsBGAlpha == 1.0) {
+    //    vsVel *= 0.5f;
+    //} else {
+    //    vsVel += gravity;
+    //}
+    //////*******DIDN'T WORK********
+
     
-    //outCol = vec3(0.0, 1.0, 0.0);
+    vsVel += gravity;
     
     // limit speed
     float speedSquared = dot(vsVel, vsVel);
@@ -153,6 +173,9 @@ void main() {
     vsPos += vsVel * u_deltaTime * 59.0f;
     
     //  reset particles when offscreen or dead
+    //  each particle has slightly different lifespan
+    float lifespan = u_particleLife + (inBaseCol.b * 2.0); // use only as random value to vary lifespans
+    
     float lifetime = u_time - inBornTime;
     
     if (vsPos.y < -1.0 || lifetime > lifespan) {
