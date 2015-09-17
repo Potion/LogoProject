@@ -30,12 +30,12 @@ public:
     
     //  parameters to control during run
     void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; }
-    void setPixelDecay( float decay) { mPixelDecaySpeed = decay; }
     void setGravity( float gravity ) { mGravity = gravity; }
+    void setParticleLifespan( float lifespan ) { mParticleLifespan = lifespan; }
     
     float getColorCycleSpeed() { return mColorCycleSpeed; }
-    float getPixelDecaySpeed() { return mPixelDecaySpeed; }
     float getGravity() { return mGravity; };
+    float getParticleLifespan() { return mParticleLifespan; }
     
     void toggleShrinkMode();
 
@@ -61,6 +61,7 @@ private:
     GLint               mHueUniform;
     GLint               mGravityUniform;
     GLint               mShrinkUniform;
+    GLint               mParticleLifeUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
@@ -80,9 +81,9 @@ private:
     
     //  adjustable parameters
     float               mColorCycleSpeed;
-    float               mPixelDecaySpeed;
     float               mGravity;
     int                 mPixelsDoShrink;
+    float               mParticleLifespan;
     
     
     //test functions

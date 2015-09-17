@@ -17,9 +17,9 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 
 ParticleSystem::ParticleSystem()
 : mColorCycleSpeed(23.0f)
-, mPixelDecaySpeed(1.0f)
 , mGravity(0.008125)
 , mPixelsDoShrink(1)
+, mParticleLifespan(1.5f)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -124,6 +124,7 @@ void ParticleSystem::setup(float &posArray)
     mHueUniform = glGetUniformLocation(mShaderProgram, "u_hue");
     mGravityUniform = glGetUniformLocation(mShaderProgram, "u_gravityPull");
     mShrinkUniform = glGetUniformLocation(mShaderProgram, "u_shrinking");
+    mParticleLifeUniform = glGetUniformLocation(mShaderProgram, "u_particleLife");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
@@ -144,6 +145,8 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mTimeUniform: " << mTimeUniform << std::endl;
     std::cout << "    mHueUniform: " << mHueUniform << std::endl;
     std::cout << "    mGravityUniform: " << mGravityUniform << std::endl;
+    std::cout << "    mShrinkUniform: " << mShrinkUniform << std::endl;
+    std::cout << "    mParticleLifeUniform: " << mParticleLifeUniform << std::endl;
     
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
@@ -197,6 +200,7 @@ void ParticleSystem::draw()
     glUniform1fv(mHueUniform, 1, &hue);
     glUniform1fv(mGravityUniform, 1, &mGravity);
     glUniform1i(mShrinkUniform, mPixelsDoShrink);
+    glUniform1fv(mParticleLifeUniform, 1, &mParticleLifespan);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);

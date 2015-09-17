@@ -2,7 +2,7 @@
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
-const float lifespan = 1.5f;
+//const float lifespan = 1.5f;
 
 uniform vec2 u_mousePos;
 uniform vec2 u_newPositions[numNewPositions];
@@ -11,6 +11,7 @@ uniform float u_time;
 uniform float u_hue;
 uniform float u_gravityPull;
 uniform bool u_shrinking;
+uniform float u_particleLife;
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -152,7 +153,7 @@ void main() {
     //  reset particles when offscreen or dead
     float lifetime = u_time - inBornTime;
     
-    if (vsPos.y < -1.0 || lifetime > lifespan) {
+    if (vsPos.y < -1.0 || lifetime > u_particleLife) {
         //  reset velocity
         //  use last position to generate random number for velocity direction
         vec2 randomSeed = inPos + vec2(inBaseCol.r, inBaseCol.g);
@@ -184,7 +185,7 @@ void main() {
     //dirCol = getDirBasedColor(outVel);
     //vsDirCol = hsv2rgb(vec3(inBaseCol.r, 1.0, 1.0));
     
-    vsDecay = 1.0 - (lifetime / lifespan);
+    vsDecay = 1.0 - (lifetime / u_particleLife);
     vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0, 1.0));
     
     vsBaseCol = inBaseCol; // recycle base color

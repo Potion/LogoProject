@@ -65,7 +65,6 @@ class LogoProjectApp : public App {
     void                setUpParams();
     float               mBGOpacity;
     float               mBasePixelOpacity;
-    float               mPixelDecaySpeed;
 };
 
 void LogoProjectApp::setup()
@@ -116,7 +115,6 @@ void LogoProjectApp::setup()
     mNumFramesForRestart = 60;
     mThreshold = 70;
     mBasePixelOpacity = 1.0;
-    mPixelDecaySpeed = 4.0f;
 }
 
 //******************************************
@@ -386,7 +384,6 @@ void LogoProjectApp::setUpParams()
     
     mParams->addParam("BG Opacity", &mBGOpacity).min(0.01).max(1.0).step(0.01);
     //mParams->addParam("Pixel Opacity", &mBasePixelOpacity).min(0.0).max(1.0).step(0.1);
-    mParams->addParam("Pixel Decay", &mPixelDecaySpeed).min(0.0f).max(4.0f).step(0.05);
 
     function<void(float)> setter = bind(&ParticleSystem::setColorCycleSpeed, mParticles, std::placeholders::_1);
     function<float()> getter = bind(&ParticleSystem::getColorCycleSpeed, mParticles);
@@ -397,6 +394,10 @@ void LogoProjectApp::setUpParams()
     mParams->addParam("Gravity", setter2, getter2).step(.0005);
     
     mParams->addButton("Change Shrink", bind(&ParticleSystem::toggleShrinkMode, mParticles));
+    
+    function<void(float)> setter3 = bind(&ParticleSystem::setParticleLifespan, mParticles, std::placeholders::_1);
+    function<float()> getter3 = bind(&ParticleSystem::getParticleLifespan, mParticles);
+    mParams->addParam("ParticleLifespan", setter3, getter3).step(.01);
     
 }
 
