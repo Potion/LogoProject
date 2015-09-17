@@ -19,6 +19,7 @@ include/opencv2/*
 !.gitkeep
 
 /documentation/screenCaps/*
+LogoProject.app/*
 
 DerivedData
 
