@@ -9,6 +9,7 @@ uniform vec2 newPositions[numNewPositions];
 uniform float deltaTime; // in seconds
 uniform float time;
 uniform float hue;
+uniform float gravityPull;
 
 
 in vec2 inPos;
@@ -122,7 +123,7 @@ void main() {
     float currentTime = time;
     
     
-    vec2 gravity = deltaTime * vec2(0.0, -0.008125);
+    vec2 gravity = deltaTime * vec2(0.0, -gravityPull);
     //vec2 gravity = vec2(0.0f, -0.0005);
     float max = 0.05;
     float maxSquared = max * max;

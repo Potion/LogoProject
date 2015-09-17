@@ -18,6 +18,8 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 ParticleSystem::ParticleSystem()
 : mColorCycleSpeed(3.0f)
 , mPixelDecaySpeed(1.0f)
+, mGravity(0.008125)
+, mIsAdditiveBlend(false)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -120,6 +122,7 @@ void ParticleSystem::setup(float &posArray)
     mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "deltaTime");
     mTimeUniform = glGetUniformLocation(mShaderProgram, "time");
     mHueUniform = glGetUniformLocation(mShaderProgram, "hue");
+    mGravityUniform = glGetUniformLocation(mShaderProgram, "gravityPull");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
@@ -138,6 +141,8 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mDeltaTimeUniform: " << mDeltaTimeUniform << std::endl;
     std::cout << "    mTimeUniform: " << mTimeUniform << std::endl;
     std::cout << "    mHueUniform: " << mHueUniform << std::endl;
+    std::cout << "    mGravityUniform: " << mGravityUniform << std::endl;
+    
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
     std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
@@ -183,12 +188,13 @@ void ParticleSystem::draw()
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
     float time = ci::app::getElapsedSeconds();
-    float hue = float(int(time) % 360) / 360.f * 3.0;
+    float hue = (fmodf(time, 360.f)) / 360.f * mColorCycleSpeed;
     
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);
     glUniform1fv(mTimeUniform, 1, &time);
     glUniform1fv(mHueUniform, 1, &hue);
+    glUniform1fv(mGravityUniform, 1, &mGravity);
     
     //  disable the rasterizer
     glEnable(GL_RASTERIZER_DISCARD);
@@ -240,8 +246,9 @@ void ParticleSystem::draw()
     glUniform1i(mBackgroundTexUniform, 1);
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
+    
+    //ci::gl::ScopedBlendAdditive additive;
     ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-//    ci::gl::ScopedBlendAdditive additive;
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
@@ -301,6 +308,21 @@ void ParticleSystem::loadTextures()
     
 }
 
+
+////******************************************
+//// toggle additive vs not (not working)
+////******************************************
+//void ParticleSystem::toggleBlendMode()
+//{
+//    mIsAdditiveBlend = !mIsAdditiveBlend;
+//    std::cout << "ParticleSystem::toggleBlendMode: " << mIsAdditiveBlend << std::endl;
+//    if (mIsAdditiveBlend) {
+//        ci::gl::disableAlphaBlending();
+//        ci::gl::enableAdditiveBlending();
+//    } else {
+//        ci::gl::enableAlphaBlending();
+//    }
+//}
 
 //******************************************
 // create shader and print out debugging info

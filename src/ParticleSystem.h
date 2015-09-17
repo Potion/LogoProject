@@ -28,9 +28,16 @@ public:
     void draw();
     void changeBackground();
     
-    void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; };
-    void setPixelDecay( float decay) { mPixelDecaySpeed = decay; };
-    void setGravity( float gravity ) { mGravity = gravity; };
+    //  parameters to control during run
+    void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; }
+    void setPixelDecay( float decay) { mPixelDecaySpeed = decay; }
+    void setGravity( float gravity ) { mGravity = gravity; }
+    
+    float getColorCycleSpeed() { return mColorCycleSpeed; }
+    float getPixelDecaySpeed() { return mPixelDecaySpeed; }
+    float getGravity() { return mGravity; };
+    
+    //void toggleBlendMode();
 
 protected:
     ParticleSystem();
@@ -51,6 +58,7 @@ private:
     GLint               mDeltaTimeUniform;
     GLint               mTimeUniform;
     GLint               mHueUniform;
+    GLint               mGravityUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
@@ -72,6 +80,8 @@ private:
     float               mColorCycleSpeed;
     float               mPixelDecaySpeed;
     float               mGravity;
+    bool                mIsAdditiveBlend;
+    
     
     //test functions
     float getRandomFloat(ci::vec2 currentPos);

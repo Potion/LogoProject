@@ -379,7 +379,7 @@ void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
 //******************************************
 void LogoProjectApp::setUpParams()
 {
-    mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(200, 150)));
+    mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(250, 150)));
     mParams->addParam("Motion threshold", &mThreshold).min(0).max(100).step(5);
     
     
@@ -387,6 +387,17 @@ void LogoProjectApp::setUpParams()
     mParams->addParam("BG Opacity", &mBGOpacity).min(0.01).max(1.0).step(0.01);
     mParams->addParam("Pixel Opacity", &mBasePixelOpacity).min(0.0).max(1.0).step(0.1);
     mParams->addParam("Pixel Decay", &mPixelDecaySpeed).min(0.0f).max(4.0f).step(0.05);
+
+    function<void(float)> setter = bind(&ParticleSystem::setColorCycleSpeed, mParticles, std::placeholders::_1);
+    function<float()> getter = bind(&ParticleSystem::getColorCycleSpeed, mParticles);
+    mParams->addParam("Color Cycle Speed", setter, getter);
+
+    function<void(float)> setter2 = bind(&ParticleSystem::setGravity, mParticles, std::placeholders::_1);
+    function<float()> getter2 = bind(&ParticleSystem::getGravity, mParticles);
+    mParams->addParam("Gravity", setter2, getter2).step(.0005);
+    
+    //mParams->addButton("Change Blend", bind(&ParticleSystem::toggleBlendMode, mParticles));
+    
 }
 
 //******************************************
