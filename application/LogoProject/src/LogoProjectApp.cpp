@@ -101,7 +101,7 @@ void LogoProjectApp::setup()
     
     //  camera
     if (!findDepthSense()) {
-        quit();
+        std::cout << "LogoProjectApp::setupNo DepthSense camera attached" << std::endl;
     }
     try {
         mCapture = Capture::create( logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT, findDepthSense() );
@@ -174,7 +174,9 @@ void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
     }
     
     if (event.getChar() == 'q' || event.getCode() == 27) {
-        mCapture->stop();
+        if (mCapture) {
+            mCapture->stop();
+        }
         quit();
     }
 }
@@ -330,8 +332,10 @@ ci::Capture::DeviceRef LogoProjectApp::findDepthSense()
 void LogoProjectApp::restartCamera()
 {
     std::cout << "LogoProjectApp::restartCamera: Frame # " << ci::app::getElapsedFrames() << std::endl;
-    mCapture->stop();
-    mCapture->start();
+    if (mCapture) {
+        mCapture->stop();
+        mCapture->start();
+    }
     mLastGoodFrame = ci::app::getElapsedFrames();
 }
 

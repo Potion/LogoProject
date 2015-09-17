@@ -259,8 +259,9 @@ void main() {
     
     //  if we are coming out of motionless period, reset lifetime
     if (!u_isMotionless && lifetime > lifespan + 1.0f) {
-        lifetime = 0.0f;
-        vsBornTime = u_time;
+        float relativeLife = lifetime / lifespan + 120.0f;
+        lifetime = (lifespan + 4.0f) * relativeLife;
+        vsBornTime = u_time - lifetime;
     }
     
     if (vsPos.y < -1.0 || lifetime > lifespan) {
