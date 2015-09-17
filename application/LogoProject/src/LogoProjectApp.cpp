@@ -63,6 +63,9 @@ class LogoProjectApp : public App {
     
     //  GUI information
     params::InterfaceGlRef  mParams;
+    bool                mIsDrawingParams;
+    bool                mIsDrawingFramerate;
+    
     void                setUpParams();
     void                toggleMotionBasedColor();
     float               mBGOpacity;
@@ -119,10 +122,13 @@ void LogoProjectApp::setup()
     mBaseParticleOpacity = 1.0;
     mMotionBasedHue = false;
     mAmountOfMotion = 0;
+    mIsDrawingParams = false;
+    mIsDrawingFramerate = false;
 
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
     ci::app::App::get()->setWindowSize(1024, 768);
+    ci::app::App::get()->setFullScreen(true);
 }
 
 //******************************************
@@ -142,11 +148,24 @@ void LogoProjectApp::mouseMove( MouseEvent event )
 
 void LogoProjectApp::keyDown(cinder::app::KeyEvent event)
 {
-    std::cout << "LogoProjectApp::keyDown:" << std::endl;
+    std::cout << "LogoProjectApp::keyDown: " << event.getChar() << std::endl;
     if (event.getChar() == ' ') {
-        std::cout << "    Spacebar" << std::endl;
-        mParticles->changeBackground();
+        std::cout << "    [Spacebar]" << std::endl;
+        //mParticles->changeBackground();
     }
+    
+    if (event.getChar() == 'f') {
+        ci::app::App::get()->setFullScreen(!ci::app::App::get()->isFullScreen());
+    }
+    
+    if (event.getChar() == 'p') {
+        mIsDrawingParams = !mIsDrawingParams;
+    }
+    
+    if (event.getChar() == 'r') {
+        mIsDrawingFramerate = !mIsDrawingFramerate;
+    }
+    
 }
 
 //******************************************
@@ -248,10 +267,14 @@ void LogoProjectApp::draw()
     //**************************************************************
     
     //  Draw the FPS
-    ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
+    if (mIsDrawingFramerate) {
+        ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
+    }
     
     mParticles->draw(mAmountOfMotion);
-    mParams->draw();
+    if (mIsDrawingParams) {
+        mParams->draw();
+    }
 }
 
 //******************************************

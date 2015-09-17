@@ -22,7 +22,7 @@ ParticleSystem::ParticleSystem()
 , mParticleLifespan(0.98f)
 , mMotionBasedHue(false)
 , mParticleOpacity(1.0f)
-, mSlipperiness(0.89f)
+, mSlipperiness(0.91f)
 {}
 
 ParticleSystem::~ParticleSystem()
