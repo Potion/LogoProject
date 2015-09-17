@@ -203,7 +203,7 @@ void main() {
     
     //  reset particles when offscreen or dead
     //  each particle has slightly different lifespan
-    float lifespan = u_particleLife + (inBaseCol.b * 2.0); // use only as random value to vary lifespans
+    float lifespan = u_particleLife + (inBaseCol.b * 0.5); // use only as random value to vary lifespans
     
     //**********************************
     //  STICKING ON THE DOTS
