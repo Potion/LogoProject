@@ -2,17 +2,13 @@
 
 uniform sampler2D ParticleTex;
 //uniform sampler2D BackgroundTex;
+uniform float u_baseOpacity;
 
 in vec2 vsPos;
 in vec3 vsFragCol;
-
 in float vsDecay;
 
 out vec4 fsColor;
-
-////  test if we can pass values through the FS
-//in vec3 outBaseCol;
-//out vec3 vsBaseCol;
 
 //******************************************
 //  lerp formula
@@ -54,7 +50,7 @@ void main() {
 //        //outColor.a *= 1.0 - logoCol.a;
 //    }
 //    else {
-        fsColor = vec4(vsFragCol.r, vsFragCol.g, vsFragCol.b, fsColor.a);
+        fsColor = vec4(vsFragCol.r, vsFragCol.g, vsFragCol.b, fsColor.a * u_baseOpacity);
 //    }
     
 }

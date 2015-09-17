@@ -66,7 +66,7 @@ class LogoProjectApp : public App {
     void                setUpParams();
     void                toggleMotionBasedColor();
     float               mBGOpacity;
-//    float               mBasePixelOpacity;
+    float               mBaseParticleOpacity;
     bool                mMotionBasedHue;
     int                 mAmountOfMotion;
 };
@@ -116,7 +116,7 @@ void LogoProjectApp::setup()
     mBGOpacity = 0.3;
     mThreshold = 70;
     setUpParams();
-    //mBasePixelOpacity = 1.0;
+    mBaseParticleOpacity = 1.0;
     mMotionBasedHue = false;
     mAmountOfMotion = 0;
 
@@ -378,7 +378,7 @@ void LogoProjectApp::updateNewPositions(std::vector<cv::Point2i> &vector)
 //******************************************
 void LogoProjectApp::setUpParams()
 {
-    mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(300, 150)));
+    mParams = params::InterfaceGl::create(getWindow(), "Parameters", toPixels(ci::ivec2(300, 200)));
     mParams->addParam("Motion threshold", &mThreshold).min(0).max(100).step(5);
     
     
@@ -400,6 +400,11 @@ void LogoProjectApp::setUpParams()
     function<void(float)> setter3 = bind(&ParticleSystem::setParticleLifespan, mParticles, std::placeholders::_1);
     function<float()> getter3 = bind(&ParticleSystem::getParticleLifespan, mParticles);
     mParams->addParam("ParticleLifespan", setter3, getter3).step(.01);
+
+    
+    function<void(float)> setter4 = bind(&ParticleSystem::setParticleOpacity, mParticles, std::placeholders::_1);
+    function<float()> getter4 = bind(&ParticleSystem::getParticleOpacity, mParticles);
+    mParams->addParam("Particle Opacity", setter4, getter4).step(.01);
     
 }
 

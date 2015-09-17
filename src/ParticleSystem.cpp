@@ -21,6 +21,7 @@ ParticleSystem::ParticleSystem()
 , mPixelsDoShrink(1)
 , mParticleLifespan(0.13f)
 , mMotionBasedHue(false)
+, mParticleOpacity(1.0f)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -125,11 +126,11 @@ void ParticleSystem::setup(float &posArray)
     mHueUniform = glGetUniformLocation(mShaderProgram, "u_hue");
     mGravityUniform = glGetUniformLocation(mShaderProgram, "u_gravityPull");
     mShrinkUniform = glGetUniformLocation(mShaderProgram, "u_shrinking");
+    mParticleOpacityUniform = glGetUniformLocation(mShaderProgram, "u_baseOpacity");
     mParticleLifeUniform = glGetUniformLocation(mShaderProgram, "u_particleLife");
-
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
-    mBackgroundTexUniform = glGetUniformLocation(mShaderProgram, "BackgroundTex");
+    //mBackgroundTexUniform = glGetUniformLocation(mShaderProgram, "BackgroundTex");
     
     std::cout << "    Max uniform locations: " << GL_MAX_UNIFORM_LOCATIONS << std::endl;
   
@@ -150,7 +151,7 @@ void ParticleSystem::setup(float &posArray)
     std::cout << "    mParticleLifeUniform: " << mParticleLifeUniform << std::endl;
     
     std::cout << "    mParticleTexUniform: " << mParticleTexUniform << std::endl;
-    std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
+    //std::cout << "    mBackgroundTexUniform: " << mBackgroundTexUniform << std::endl;
     
     std::cout << "\n" << std::endl;
     std::cout << "Max number of transform varyings: " << GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS << std::endl;
@@ -213,6 +214,7 @@ void ParticleSystem::draw(int amountOfMotion)
     glUniform1fv(mGravityUniform, 1, &mGravity);
     glUniform1i(mShrinkUniform, mPixelsDoShrink);
     glUniform1fv(mParticleLifeUniform, 1, &mParticleLifespan);
+    glUniform1fv(mParticleOpacityUniform, 1, &mParticleOpacity);
     
     
     //  disable the rasterizer
@@ -265,13 +267,13 @@ void ParticleSystem::draw(int amountOfMotion)
     //  Cinder openGL calls to render textures as points
     // glUniform1i(mParticleTexUniform, 0);
     ci::gl::ScopedTextureBind texScope( mParticleTex , 0 );
-    ci::gl::ScopedTextureBind texScope2( mBackgroundTex, 1 );
-    glUniform1i(mBackgroundTexUniform, 1);
+    //ci::gl::ScopedTextureBind texScope2( mBackgroundTex, 1 );
+    //glUniform1i(mBackgroundTexUniform, 1);
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
     
-    //ci::gl::ScopedBlendAdditive additive;
-    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    ci::gl::ScopedBlendAdditive additive;
+    //ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
@@ -323,17 +325,17 @@ void ParticleSystem::loadTextures()
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
-    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
+    //mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
 //    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlur.png")), textureFormat);
     //mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlurRed.png")), textureFormat);
     //mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
     
-    mBackgroundTex = mPotionTex;
+    //mBackgroundTex = mPotionTex;
     
     
     std::cout << "ParticleSystem::loadTextures" << std::endl;
     std::cout << "    mParticleTex id: " << mParticleTex->getId() << std::endl;
-    std::cout << "    mPotionTex id: " << mPotionTex->getId() << std::endl;
+    //std::cout << "    mPotionTex id: " << mPotionTex->getId() << std::endl;
     
 }
 

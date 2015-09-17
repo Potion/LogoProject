@@ -31,10 +31,12 @@ public:
     //  parameters to control during run
     void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; }
     void setGravity( float gravity ) { mGravity = gravity; }
+    void setParticleOpacity (float opacity) { mParticleOpacity = opacity; }
     void setParticleLifespan( float lifespan ) { mParticleLifespan = lifespan; }
     
     float getColorCycleSpeed() { return mColorCycleSpeed; }
-    float getGravity() { return mGravity; };
+    float getGravity() { return mGravity; }
+    float getParticleOpacity() { return mParticleOpacity; }
     float getParticleLifespan() { return mParticleLifespan; }
     
     void toggleShrinkMode();
@@ -62,6 +64,7 @@ private:
     GLint               mHueUniform;
     GLint               mGravityUniform;
     GLint               mShrinkUniform;
+    GLint               mParticleOpacityUniform;
     GLint               mParticleLifeUniform;
 
     GLint               mParticleTexUniform;
@@ -73,7 +76,7 @@ private:
     GLuint              createShader(GLenum type, const GLchar* src);
     
     void                loadTextures();
-    ci::gl::TextureRef  mParticleTex, mPotionTex, mPhillipTex;
+    ci::gl::TextureRef  mParticleTex, mPotionTex;
     ci::gl::TextureRef  mBackgroundTex;
     
     ci::vec2            mLastMousePos;
@@ -84,6 +87,7 @@ private:
     float               mColorCycleSpeed;
     float               mGravity;
     int                 mPixelsDoShrink;
+    float               mParticleOpacity;
     float               mParticleLifespan;
     bool                mMotionBasedHue;
     

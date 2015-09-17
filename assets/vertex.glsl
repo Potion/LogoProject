@@ -27,7 +27,7 @@ uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
 
-//uniform sampler2D BackgroundTex;
+//uniform sampler2D BackgroundTex; // doesn't work in VS
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -182,23 +182,6 @@ void main() {
     hypotheticalPos.x = vsPos.x * 1.33333333;
     hypotheticalPos.y = vsPos.y;
     
-//    bool isStuck = false;
-//    if (distance(vsPos, dot0pos) < dot0radius) {
-//        isStuck = true;
-//        vsVel *= .89;
-//    } else if (distance(vsPos, dot1pos) < dot1radius) {
-//        isStuck = true;
-//        vsVel *= .89;
-//    } else if (distance(vsPos, dot2pos) < dot2radius) {
-//        isStuck = true;
-//        vsVel *= .89;
-//    } else if (distance(vsPos, dot3pos) < dot3radius) {
-//        isStuck = true;
-//        vsVel *= .89;
-//    } else {
-//        vsVel += gravity;
-//    }
-
     bool isStuck = false;
     if (distance(hypotheticalPos, dot0pos) < dot0radius) {
         isStuck = true;
