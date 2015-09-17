@@ -19,7 +19,7 @@ ParticleSystem::ParticleSystem()
 : mColorCycleSpeed(0.19f)
 , mGravity(0.008125)
 , mPixelsDoShrink(1)
-, mParticleLifespan(0.54f)
+, mParticleLifespan(0.34f)
 {}
 
 ParticleSystem::~ParticleSystem()

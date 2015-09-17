@@ -94,7 +94,7 @@ void LogoProjectApp::setup()
         quit();
     }
     try {
-        mCapture = Capture::create( 640, 480, findDepthSense() );
+        mCapture = Capture::create( logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT, findDepthSense() );
         mCapture->start();
     }
     catch( ci::Exception &exc ) {
@@ -106,15 +106,17 @@ void LogoProjectApp::setup()
         mNewPositions[i] = ci::randFloat(-1.0f, 1.0f);
     }
     
-    mPrevMat = cv::Mat(480, 640, CV_8U);
+    mPrevMat = cv::Mat(logo::CAM_RES_HEIGHT, logo::CAM_RES_WIDTH, CV_8U);
 
-    //  set defaults and set up paramater GUI
+    //  set defaults and set up parameter GUI
     mBGOpacity = 0.3;
+    mThreshold = 70;
     setUpParams();
+    mBasePixelOpacity = 1.0;
+
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
-    mThreshold = 70;
-    mBasePixelOpacity = 1.0;
+    ci::app::App::get()->setWindowSize(1024, 768);
 }
 
 //******************************************
@@ -127,7 +129,7 @@ void LogoProjectApp::mouseDown( MouseEvent event )
 void LogoProjectApp::mouseMove( MouseEvent event )
 {
     ci::vec2 normPos(float(event.getPos().x), float(event.getPos().y));
-    normPos = normalizePosition(normPos, 640, 480);
+    normPos = normalizePosition(normPos, logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
     //std::cout << "Moved mouse: " << normPos << std::endl;
     mParticles->updateMouse(normPos);
 }
@@ -219,7 +221,7 @@ void LogoProjectApp::draw()
     //    //gl::draw(mTexture);
     //}
     if (mBlackBox) {
-        gl::draw(mBlackBox);
+        gl::draw(mBlackBox, getWindowBounds());
     }
     
     //**************Lots of stuff that didn't work*****************
@@ -342,7 +344,7 @@ void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
         
         //  grab all positions
         for (ci::vec2 eachVector : vector) {
-            eachVector = normalizePosition(eachVector, 640, 480);
+            eachVector = normalizePosition(eachVector, logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
             mNewPositions[index] = eachVector.x;
             mNewPositions[index + 1] = eachVector.y;
             index += 2;
@@ -365,7 +367,7 @@ void LogoProjectApp::updateNewPositions(std::vector<ci::vec2> &vector)
         
         //  put the first ones in the array
         for (int i = 0; i < logo::NUM_NEW_POSITIONS; i+=2) {
-            vector[indices[i]] = normalizePosition(vector[indices[i]], 640, 480);
+            vector[indices[i]] = normalizePosition(vector[indices[i]], logo::CAM_RES_WIDTH, logo::CAM_RES_HEIGHT);
             mNewPositions[i] = vector[indices[i]].x;
             mNewPositions[i+1] = vector[indices[i]].y;
         }

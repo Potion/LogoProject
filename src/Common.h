@@ -10,5 +10,8 @@
 
 namespace logo {
     const int NUM_NEW_POSITIONS = 100; // MUST MATCH numNewPositions VALUE IN VERTEX SHADER
-    const int NUM_PARTICLES     = 10000;
+    const int NUM_PARTICLES     = 50000;
+    
+    const int CAM_RES_WIDTH     = 320;
+    const int CAM_RES_HEIGHT    = 240;
 }
