@@ -1,11 +1,10 @@
-#version 330 core
+#version 150 core
 
 uniform sampler2D ParticleTex;
 uniform sampler2D BackgroundTex;
 
 in vec2 vsPos;
 in vec3 vsFragCol;
-//in float vsBGAlpha;
 
 in float vsDecay;
 
@@ -53,7 +52,4 @@ void main() {
         fsColor = vec4(vsFragCol.r, vsFragCol.g, vsFragCol.b, fsColor.a);
     }
     
-//    if (vsBGAlpha > 0.5) {
-//        fsColor = vec4(1.0, 0.0, 0.0, 1.0);
-//    }
 }

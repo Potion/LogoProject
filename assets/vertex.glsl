@@ -1,8 +1,20 @@
-#version 330 core
+#version 150 core
 
 const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
 //const float lifespan = 1.5f;
+
+//  hard-code the dots
+const vec2 dot0pos = vec2(-0.08125001, 0.50416666);
+const vec2 dot1pos = vec2(0.19062495, -0.13333333);
+const vec2 dot2pos = vec2(-0.15625, -0.33749998);
+const vec2 dot3pos = vec2(-0.021875024, -0.6291667);
+
+const float dot0radius = 0.2890625;
+const float dot1radius = 0.1625;
+const float dot2radius = 0.0875;
+const float dot3radius = 0.053125;
+
 
 uniform vec2 u_mousePos;
 uniform vec2 u_newPositions[numNewPositions];
@@ -33,7 +45,6 @@ out float vsBornTime;
 //  passed only to fragment shader
 out float vsDecay;
 out vec3 vsFragCol;
-//out float vsBGAlpha;
 
 //******************************************
 //  generate a pseudo random direction based on particle's current position
