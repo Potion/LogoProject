@@ -4,13 +4,13 @@ const int numNewPositions = 100;
 const float MATH_PI = 3.1415926535897932384626433832795;
 const float lifespan = 1.5f;
 
-uniform vec2 mousePos;
-uniform vec2 newPositions[numNewPositions];
-uniform float deltaTime; // in seconds
-uniform float time;
-uniform float hue;
-uniform float gravityPull;
-uniform bool shrinking;
+uniform vec2 u_mousePos;
+uniform vec2 u_newPositions[numNewPositions];
+uniform float u_deltaTime; // in seconds
+uniform float u_time;
+uniform float u_hue;
+uniform float u_gravityPull;
+uniform bool u_shrinking;
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -121,10 +121,10 @@ vec3 getDirBasedColor(vec2 dir)
 //  main
 //******************************************
 void main() {
-    float currentTime = time;
+    float currentTime = u_time;
     
     
-    vec2 gravity = deltaTime * vec2(0.0, -gravityPull);
+    vec2 gravity = u_deltaTime * vec2(0.0, -u_gravityPull);
     //vec2 gravity = vec2(0.0f, -0.0005);
     float max = 0.05;
     float maxSquared = max * max;
@@ -147,10 +147,10 @@ void main() {
     }
     
     //vsPos += vsVel;
-    vsPos += vsVel * deltaTime * 59.0f;
+    vsPos += vsVel * u_deltaTime * 59.0f;
     
     //  reset particles when offscreen or dead
-    float lifetime = time - inBornTime;
+    float lifetime = u_time - inBornTime;
     
     if (vsPos.y < -1.0 || lifetime > lifespan) {
         //  reset velocity
@@ -171,14 +171,14 @@ void main() {
         float topLimit = float(numNewPositions) - 0.1;
         float newNum = mapFloat(newVelSeed, 0.0, 1.0, 0.0, topLimit);
         int newIndex = int(newNum);
-        vsPos = newPositions[newIndex];
-        //vsPos = mousePos;
+        vsPos = u_newPositions[newIndex];
+        //vsPos = u_mousePos;
         
         //  new color
-        vsCurrentHue = hue;
+        vsCurrentHue = u_hue;
         
         //  reset life
-        vsBornTime = time;
+        vsBornTime = u_time;
     }
     
     //dirCol = getDirBasedColor(outVel);
@@ -189,7 +189,7 @@ void main() {
     
     vsBaseCol = inBaseCol; // recycle base color
     vsSize = inSize; // recycle size
-    if (shrinking) {
+    if (u_shrinking) {
         gl_PointSize = vsSize * vsDecay;
     } else {
         gl_PointSize = vsSize;

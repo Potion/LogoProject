@@ -117,13 +117,13 @@ void ParticleSystem::setup(float &posArray)
     mSizeAttrib = glGetAttribLocation(mShaderProgram, "inSize");
     mBornTimeAttrib = glGetAttribLocation(mShaderProgram, "inBornTime");
 
-    mMousePosUniform = glGetUniformLocation(mShaderProgram, "mousePos");
-    mNewPosUniform = glGetUniformLocation(mShaderProgram, "newPositions");
-    mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "deltaTime");
-    mTimeUniform = glGetUniformLocation(mShaderProgram, "time");
-    mHueUniform = glGetUniformLocation(mShaderProgram, "hue");
-    mGravityUniform = glGetUniformLocation(mShaderProgram, "gravityPull");
-    mShrinkUniform = glGetUniformLocation(mShaderProgram, "shrinking");
+    mMousePosUniform = glGetUniformLocation(mShaderProgram, "u_mousePos");
+    mNewPosUniform = glGetUniformLocation(mShaderProgram, "u_newPositions");
+    mDeltaTimeUniform = glGetUniformLocation(mShaderProgram, "u_deltaTime");
+    mTimeUniform = glGetUniformLocation(mShaderProgram, "u_time");
+    mHueUniform = glGetUniformLocation(mShaderProgram, "u_hue");
+    mGravityUniform = glGetUniformLocation(mShaderProgram, "u_gravityPull");
+    mShrinkUniform = glGetUniformLocation(mShaderProgram, "u_shrinking");
 
     
     mParticleTexUniform = glGetUniformLocation(mShaderProgram, "ParticleTex");
