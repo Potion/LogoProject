@@ -113,7 +113,7 @@ void LogoProjectApp::setup()
     mPrevMat = cv::Mat(logo::CAM_RES_HEIGHT, logo::CAM_RES_WIDTH, CV_8U);
 
     //  set defaults and set up parameter GUI
-    mBGOpacity = 0.3;
+    mBGOpacity = 0.81;
     mThreshold = 70;
     setUpParams();
     mBaseParticleOpacity = 1.0;

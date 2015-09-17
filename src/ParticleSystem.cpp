@@ -17,9 +17,9 @@ ParticleSystemRef ParticleSystem::create(float &posArray)
 
 ParticleSystem::ParticleSystem()
 : mColorCycleSpeed(0.19f)
-, mGravity(0.008125)
-, mPixelsDoShrink(1)
-, mParticleLifespan(0.13f)
+, mGravity(0.0181)
+, mPixelsDoShrink(0)
+, mParticleLifespan(0.98f)
 , mMotionBasedHue(false)
 , mParticleOpacity(1.0f)
 , mSlipperiness(0.89f)
@@ -277,8 +277,8 @@ void ParticleSystem::draw(int amountOfMotion)
     
     ci::gl::ScopedState	stateScope( GL_PROGRAM_POINT_SIZE, true );
     
-    ci::gl::ScopedBlendAdditive additive;
-    //ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //ci::gl::ScopedBlendAdditive additive;
+    ci::gl::ScopedBlend blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     
     glBindBuffer(GL_ARRAY_BUFFER, mParticleBufferA);
