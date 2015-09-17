@@ -28,6 +28,9 @@ public:
     void draw(int amountOfMotion);
     void changeBackground();
     
+    void setMotionlessness(int truefalse) { mIsMotionless = truefalse; }
+    
+    
     //  parameters to control during run
     void setColorCycleSpeed(float speed) { mColorCycleSpeed = speed; }
     void setGravity( float gravity ) { mGravity = gravity; }
@@ -69,6 +72,7 @@ private:
     GLint               mParticleOpacityUniform;
     GLint               mParticleLifeUniform;
     GLint               mSlipperinessUniform;
+    GLint               mMotionlessUniform;
 
     GLint               mParticleTexUniform;
     GLint               mBackgroundTexUniform;
@@ -94,6 +98,7 @@ private:
     float               mParticleLifespan;
     bool                mMotionBasedHue;
     float               mSlipperiness;
+    int                 mIsMotionless;
     
     
     //test functions

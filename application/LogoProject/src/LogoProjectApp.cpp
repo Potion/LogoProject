@@ -49,6 +49,9 @@ class LogoProjectApp : public App {
     int                 mNumFramesForRestart;
     int                 mLastGoodFrame;
     int                 mThreshold;
+    float               mAmountOfTimeForMotionlessness;
+    float               mLastTimeWithMotion;
+    bool                mIsMotionlessNow;
     
     std::vector<cv::Point2i>   getWhitePixels(cv::Mat &mat);
     ci::vec2            chooseRandomWhiteSpot(std::vector<ci::vec2> &vector);
@@ -127,6 +130,10 @@ void LogoProjectApp::setup()
 
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
+    mAmountOfTimeForMotionlessness = 7.0f;
+    mLastTimeWithMotion = 1;
+    mIsMotionlessNow = false;
+    
     ci::app::App::get()->setWindowSize(1024, 768);
     ci::app::App::get()->setFullScreen(true);
 }
@@ -218,9 +225,20 @@ void LogoProjectApp::update()
     if (mAmountOfMotion > 0) {
         //sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
         updateNewPositions(whitePixels);
+        mLastTimeWithMotion = ci::app::getElapsedSeconds();
+        if (mIsMotionlessNow) {
+            mParticles->setMotionlessness(0);
+            mIsMotionlessNow = false;
+        }
     } else {
         //std::cout << "LogoProjectApp::update: no movement pixels" << std::endl;
         resetPosArray();
+    }
+    
+    //  if it's been still long enough, alert particle system no motion
+    if (!mIsMotionlessNow && ci::app::getElapsedSeconds() - mLastTimeWithMotion > mAmountOfTimeForMotionlessness) {
+        mParticles->setMotionlessness(1);
+        mIsMotionlessNow = true;
     }
 
     //  for debugging, convert OpenCV mats to Cinder-usable images

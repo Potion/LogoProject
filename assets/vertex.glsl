@@ -27,6 +27,7 @@ uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
 uniform float u_slipperiness;
+uniform bool u_isMotionless;
 
 //uniform sampler2D BackgroundTex; // doesn't work in VS
 
@@ -136,11 +137,24 @@ vec3 getDirBasedColor(vec2 dir)
     return color;
 }
 
+//******************************************
+//  place in completely random spot if no motion
+//******************************************
+void placeRandomlyAnywhere()
+{
+    
+}
 
 //******************************************
 //  main
 //******************************************
 void main() {
+
+    
+    ////////////////////////////////////
+    //  updating positions
+    ////////////////////////////////////
+    
     float currentTime = u_time;
     
     vec2 gravity = u_deltaTime * vec2(0.0, -u_gravityPull);
@@ -208,7 +222,7 @@ void main() {
     }
     //***************************************
     
-    //vsPos += vsVel;
+    //  update position
     vsPos += vsVel * u_deltaTime * 59.0f;
     
     //  reset particles when offscreen or dead
@@ -220,39 +234,55 @@ void main() {
     if (isStuck) lifespan += 4.0f;
     //**********************************
     
+    ////////////////////////////////////
+    //  end of life
+    ////////////////////////////////////
+    
     float lifetime = u_time - inBornTime;
     
     if (vsPos.y < -1.0 || lifetime > lifespan) {
-        //  reset velocity
-        //  use last position to generate random number for velocity direction
+        //  pick new velocity
         vec2 randomSeed = inPos + vec2(inBaseCol.r, inBaseCol.g);
         vec2 randomSeed2 = inPos + vec2(inBaseCol.g, inBaseCol.b);
-
         float newVelSeed = getRandomFloat(randomSeed);
-
         float newSpeed = getRandomFloat(randomSeed2);
         newSpeed = mapFloat(newSpeed, 0.0, 1.0, 0.055, 0.15); // make min output number smaller; why does that happen?
-        
         vsVel = getDir(newVelSeed);
         vsVel *= newSpeed;
+        
+        //  pick position based on what's happening
+        if (u_isMotionless) {
+            vec2 randomSeed3 = vec2(inBaseCol.r, inBaseCol.b);
+            vec2 randomSeed4 = randomSeed + vec2(inBaseCol.g, inBaseCol.b);
+            float xPos = getRandomFloat(randomSeed3);
+            float yPos = getRandomFloat(randomSeed4);
+            xPos = mapFloat(xPos, 0.0, 1.0, -50.0f, 60.0f);
+            yPos = mapFloat(yPos, 0.0, 2.0, -1.0, 14.0);
+            vsPos = vec2(xPos, yPos);
+            
+        } else {
+            //  if there are new positions,
+            //  pick random new position within array of white pixels
+            float topLimit = float(numNewPositions) - 0.1;
+            float newNum = mapFloat(newVelSeed, 0.0, 1.0, 0.0, topLimit);
+            int newIndex = int(newNum);
+            vsPos = u_newPositions[newIndex];
+            //vsPos = u_mousePos;
+            
+        }
 
-        //  reset position
-        //  pick random new position within array of white pixels
-        float topLimit = float(numNewPositions) - 0.1;
-        float newNum = mapFloat(newVelSeed, 0.0, 1.0, 0.0, topLimit);
-        int newIndex = int(newNum);
-        vsPos = u_newPositions[newIndex];
-        //vsPos = u_mousePos;
-        
-        //  new color
+        //  update color and birthday
         vsCurrentHue = u_hue;
-        
-        //  reset life
         vsBornTime = u_time;
-    }
+}
     
     //dirCol = getDirBasedColor(outVel);
     //vsDirCol = hsv2rgb(vec3(inBaseCol.r, 1.0, 1.0));
+    
+    ////////////////////////////////////
+    //  pass the info along
+    ////////////////////////////////////
+    
     
     vsDecay = 1.0 - (lifetime / lifespan);
     vsFragCol = hsv2rgb(vec3(vsCurrentHue, 1.0f, 1.0f));
