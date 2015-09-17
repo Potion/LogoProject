@@ -1,0 +1,27 @@
+mapping for particle system
+
+/*
+//  on a 640x480 base, location and radii of dots are, from top to bottom:
+ (293.446, 118.522), radius: 183.718
+ (383.816, 272.243), radius: 108.504
+ (272.154, 320.642), radius: 51.273
+ (313.285, 390.965), radius: 33.149
+
+
+//  positions
+float dot0x = mapFloat(293.446f, 0.0f, 640.0f, -1.0f, 1.0f);
+float dot0y = mapFloat(118.522f, 0.0f, 480.0f * 1.33f, 1.0, -1.0);
+float dot1x = mapFloat(383.816f, 0.0f, 640.0f, -1.0f, 1.0f);
+float dot1y = mapFloat(272.243f, 0.0f, 480.0f * 1.33f, 1.0, -1.0);
+float dot2x = mapFloat(272.154, 0.0f, 640.0f, -1.0f, 1.0f);
+float dot2y = mapFloat(320.642f, 0.0f, 480.0f * 1.33f, 1.0, -1.0);
+float dot3x = mapFloat(313.285f, 0.0f, 640.0f, -1.0f, 1.0f);
+float dot3y = mapFloat(390.965f, 0.0f, 480.0f * 1.33f, 1.0, -1.0);
+
+//  radii
+const float dot0radius = mapFloat(183.718f, 0.0f, 640.0f, 0.0f, 2.0f);
+const float dot1radius = mapFloat(108.504f, 0.0f, 640.0f, 0.0f, 2.0f);
+const float dot2radius = mapFloat(51.273f, 0.0f, 640.0f, 0.0f, 2.0f);
+const float dot3radius = mapFloat(33.149f, 0.0f, 640.0f, 0.0f, 2.0f);
+*/
+

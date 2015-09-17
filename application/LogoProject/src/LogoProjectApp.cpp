@@ -64,8 +64,11 @@ class LogoProjectApp : public App {
     //  GUI information
     params::InterfaceGlRef  mParams;
     void                setUpParams();
+    void                toggleMotionBasedColor();
     float               mBGOpacity;
-    float               mBasePixelOpacity;
+//    float               mBasePixelOpacity;
+    bool                mMotionBasedHue;
+    int                 mAmountOfMotion;
 };
 
 void LogoProjectApp::setup()
@@ -113,7 +116,9 @@ void LogoProjectApp::setup()
     mBGOpacity = 0.3;
     mThreshold = 70;
     setUpParams();
-    mBasePixelOpacity = 1.0;
+    //mBasePixelOpacity = 1.0;
+    mMotionBasedHue = false;
+    mAmountOfMotion = 0;
 
     mLastGoodFrame = 1;
     mNumFramesForRestart = 60;
@@ -190,7 +195,8 @@ void LogoProjectApp::update()
     
     //  send one random movement location to particle system
     std::vector<cv::Point2i> whitePixels = getWhitePixels(tempDiff);
-    if (whitePixels.size() > 0) {
+    mAmountOfMotion = whitePixels.size();
+    if (mAmountOfMotion > 0) {
         //sendRandomPoint(chooseRandomWhiteSpot(whitePixels));
         updateNewPositions(whitePixels);
     } else {
@@ -244,7 +250,7 @@ void LogoProjectApp::draw()
     //  Draw the FPS
     ci::gl::drawString( "Framerate: " + ci::toString(ci::app::App::get()->getAverageFps()), ci::vec2( 10.0f, 10.0f ), ci::Color(1,0,0) );
     
-    mParticles->draw();
+    mParticles->draw(mAmountOfMotion);
     mParams->draw();
 }
 
@@ -389,11 +395,20 @@ void LogoProjectApp::setUpParams()
     mParams->addParam("Gravity", setter2, getter2).step(.0005);
     
     mParams->addButton("Change Shrink", bind(&ParticleSystem::toggleShrinkMode, mParticles));
+    mParams->addButton("Change MotionBasedHue", bind(&ParticleSystem::toggleMotionBasedHue, mParticles));
     
     function<void(float)> setter3 = bind(&ParticleSystem::setParticleLifespan, mParticles, std::placeholders::_1);
     function<float()> getter3 = bind(&ParticleSystem::getParticleLifespan, mParticles);
     mParams->addParam("ParticleLifespan", setter3, getter3).step(.01);
     
+}
+
+//******************************************
+//  toggle whether color determined based on motion
+//******************************************
+void LogoProjectApp::toggleMotionBasedColor()
+{
+    mMotionBasedHue = !mMotionBasedHue;
 }
 
 //******************************************

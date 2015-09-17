@@ -19,7 +19,8 @@ ParticleSystem::ParticleSystem()
 : mColorCycleSpeed(0.19f)
 , mGravity(0.008125)
 , mPixelsDoShrink(1)
-, mParticleLifespan(0.34f)
+, mParticleLifespan(0.13f)
+, mMotionBasedHue(false)
 {}
 
 ParticleSystem::~ParticleSystem()
@@ -178,7 +179,7 @@ void ParticleSystem::updateMouse(ci::vec2 pos)
 //******************************************
 //  draw function; main updates happen here
 //******************************************
-void ParticleSystem::draw()
+void ParticleSystem::draw(int amountOfMotion)
 {
     glBindVertexArray(mVAO);
     glUseProgram(mShaderProgram);
@@ -193,7 +194,17 @@ void ParticleSystem::draw()
     //float mousePos[2] = {float(mLastMousePos.x), float(mLastMousePos.y)};
     //glUniform2fv(mMousePosUniform, 1, mousePos);
     float time = ci::app::getElapsedSeconds();
-    float hue = (fmodf(time * mColorCycleSpeed, 1.f));
+    
+    float hue;
+    if (!mMotionBasedHue) {
+        hue = (fmodf(time * mColorCycleSpeed, 1.f));
+    } else {
+        hue = float(amountOfMotion) / 10000.f;
+        hue = std::max(0.0f, std::min(hue, 1.0f));
+        hue = 1.0f - hue * 0.5;
+    }
+    
+    
     
     glUniform2fv(mNewPosUniform, logo::NUM_NEW_POSITIONS, testArray);
     glUniform1fv(mDeltaTimeUniform, 1, &mDeltaTime);
@@ -312,10 +323,10 @@ void ParticleSystem::loadTextures()
     ci::gl::Texture::Format textureFormat;
     textureFormat.magFilter( GL_LINEAR ).minFilter( GL_LINEAR ).mipmap().internalFormat( GL_RGBA );
     mParticleTex = ci::gl::Texture::create( ci::loadImage( ci::app::loadAsset( "smoke_blur.png" ) ), textureFormat );
-    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesGreen.png")), textureFormat);
+    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubbles.png")), textureFormat);
 //    mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlur.png")), textureFormat);
     //mPotionTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("potionBubblesNoBlurRed.png")), textureFormat);
-    mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
+    //mPhillipTex = ci::gl::Texture::create(ci::loadImage(ci::app::loadAsset("phillipHeadThreshold.png")), textureFormat);
     
     mBackgroundTex = mPotionTex;
     
@@ -334,6 +345,15 @@ void ParticleSystem::toggleShrinkMode()
 {
     mPixelsDoShrink = !mPixelsDoShrink;
     std::cout << "mPixelsDoShrink: " << mPixelsDoShrink << std::endl;
+}
+
+//******************************************
+// toggle whether hue based on motion
+//******************************************
+void ParticleSystem::toggleMotionBasedHue()
+{
+    mMotionBasedHue = !mMotionBasedHue;
+    std::cout << "mMotionBasedHue: " << mMotionBasedHue << std::endl;
 }
 
 //******************************************
@@ -362,7 +382,7 @@ GLuint ParticleSystem::createShader(GLenum type, const GLchar* src)
 
 void ParticleSystem::changeBackground()
 {
-    mBackgroundTex = mPhillipTex;
+    //mBackgroundTex = mPhillipTex;
     
 }
 

@@ -25,7 +25,7 @@ public:
     void setup(float &posArray);
     void update();
     void updateMouse(ci::vec2 pos);
-    void draw();
+    void draw(int amountOfMotion);
     void changeBackground();
     
     //  parameters to control during run
@@ -38,6 +38,7 @@ public:
     float getParticleLifespan() { return mParticleLifespan; }
     
     void toggleShrinkMode();
+    void toggleMotionBasedHue();
 
 protected:
     ParticleSystem();
@@ -84,6 +85,7 @@ private:
     float               mGravity;
     int                 mPixelsDoShrink;
     float               mParticleLifespan;
+    bool                mMotionBasedHue;
     
     
     //test functions

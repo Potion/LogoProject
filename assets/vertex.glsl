@@ -5,15 +5,17 @@ const float MATH_PI = 3.1415926535897932384626433832795;
 //const float lifespan = 1.5f;
 
 //  hard-code the dots
-const vec2 dot0pos = vec2(-0.08125001, 0.50416666);
-const vec2 dot1pos = vec2(0.19062495, -0.13333333);
-const vec2 dot2pos = vec2(-0.15625, -0.33749998);
-const vec2 dot3pos = vec2(-0.021875024, -0.6291667);
+const float scalar = 1.5f;
 
-const float dot0radius = 0.2890625;
-const float dot1radius = 0.1625;
-const float dot2radius = 0.0875;
-const float dot3radius = 0.053125;
+const vec2 dot0pos = vec2(-0.08125001 * scalar, 0.50416666 * .666666f * scalar);
+const vec2 dot1pos = vec2(0.19062495 * scalar, -0.13333333 * .666666f * scalar);
+const vec2 dot2pos = vec2(-0.15625 * scalar, -0.33749998 * .666666f * scalar);
+const vec2 dot3pos = vec2(-0.021875024 * scalar, -0.6291667 * .666666f * scalar);
+
+const float dot0radius = 0.2890625 * scalar;
+const float dot1radius = 0.1625 * scalar;
+const float dot2radius = 0.0875 * scalar;
+const float dot3radius = 0.053125 * scalar;
 
 
 uniform vec2 u_mousePos;
@@ -25,7 +27,7 @@ uniform float u_gravityPull;
 uniform bool u_shrinking;
 uniform float u_particleLife;
 
-uniform sampler2D BackgroundTex;
+//uniform sampler2D BackgroundTex;
 
 //  vertex array (for ping-ponging)
 in vec2 inPos;
@@ -95,6 +97,7 @@ float mapFloat(float value, float inputMin, float inputMax, float outputMin, flo
     return outVal;
 }
 
+
 //******************************************
 //  convert RGB to HSV
 //******************************************
@@ -132,12 +135,12 @@ vec3 getDirBasedColor(vec2 dir)
     return color;
 }
 
+
 //******************************************
 //  main
 //******************************************
 void main() {
     float currentTime = u_time;
-    
     
     vec2 gravity = u_deltaTime * vec2(0.0, -u_gravityPull);
     //vec2 gravity = vec2(0.0f, -0.0005);
@@ -176,7 +179,7 @@ void main() {
     
     //  adjust for 4x3 aspect ratio of window
     vec2 hypotheticalPos;
-    hypotheticalPos.x = vsPos.x * 1.33333;
+    hypotheticalPos.x = vsPos.x * 1.33333333;
     hypotheticalPos.y = vsPos.y;
     
 //    bool isStuck = false;
