@@ -136,6 +136,7 @@ void LogoProjectApp::setup()
     
     ci::app::App::get()->setWindowSize(1024, 768);
     ci::app::App::get()->setFullScreen(true);
+    hideCursor();
 }
 
 //******************************************
