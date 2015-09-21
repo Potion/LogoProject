@@ -168,7 +168,7 @@ void ParticleSystem::setup(float &posArray)
 }
 
 //******************************************
-//  nothing happens in update
+//  update delta time in update
 //******************************************
 void ParticleSystem::update()
 {
