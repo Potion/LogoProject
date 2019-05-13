@@ -1,8 +1,8 @@
-###Logo project
+### Logo project
 
 Uses raw openGL within Cinder project to allow interaction with logo.
 
-####Installation
+#### Installation
 **Adding OpenCV**
 * Include opencv static libraries (```libopencv_calib3d.a```, ```libopencv_core.a```, ```libopencv_features2d.a```, etc.) in the folder ```libs/opencv/``` at the same level as the ```Cinder/``` folder.
 
