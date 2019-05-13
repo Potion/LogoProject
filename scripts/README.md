@@ -1,4 +1,4 @@
-###Launch scripts
+### Launch scripts
 
 Copy ```com.potiondesign.LogoProject.plist``` to ```~/Library/LaunchAgents/```
 
